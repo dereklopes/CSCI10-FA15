@@ -1,0 +1,36 @@
+/*
+ * Programming Challenge 1
+ *
+ * written by			Derek Lopes
+ * created on			25 August 2015
+ * last modified on		26 August 2015
+ *
+ * This program declares some variables, gets user input to store those variables
+ * and then displays the values.
+ *
+ */
+program challenge1;
+
+// includes
+#include( "stdlib.hhf" )
+// static declarations
+static
+    user_name:      string; 
+    years_at_butte: uns8;
+
+begin challenge1;
+
+    stdout.put( "Welcome to my program. What is your name? " );
+    stdin.a_gets();
+	mov(eax, user_name);
+	
+    stdout.put( "How many years have you been at Butte? " );
+	stdin.flushInput();
+    stdin.getu8();
+	mov(al, years_at_butte);
+
+    stdout.put ( nl, "Nice to meet you, ", user_name, ".", nl,
+                "You have been at Butte College for ", years_at_butte, " years? Awesome!", nl);
+
+	strfree(user_name);
+end challenge1; 
