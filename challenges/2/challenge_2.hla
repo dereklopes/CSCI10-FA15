@@ -1,0 +1,71 @@
+/*
+ * Programming Challenge 2
+ *
+ * written by			Derek Lopes
+ * created on			1 September 2015
+ * last modified on		1 September 2015
+ *
+ * 
+ * 
+ *
+ */
+program Starter;
+
+// includes
+#include( "stdlib.hhf" )
+// static declarations
+static
+    num_1: uns8;
+    num_2: uns8;
+    cont: char;
+    good_input: boolean;
+
+// procedure forward declarations
+
+// procedure definitions
+
+begin Starter;
+
+    stdout.put( "Welcome to challenge 2!" );
+
+    mov( false, good_input );
+    forever
+        repeat
+          try
+              stdout.put( "Enter a number 1-50: " );
+              std.get( num_1 );
+              if( num_1 < 51 )
+                  if( num_1 > 0 )
+                      mov( true, good_input );
+                  else
+                      stdout.put( "Number must be 1-50" );
+                  endif;
+              else
+                  stdout.put( "Number must be 1-50" );
+              endif;
+
+          catch ( ex.ConversionError );
+              stdout.put( "Invalid input", nl ); 
+          catch ( ex.ValueOutOfRange );
+              stdout.put( "Invalid input", nl ); 
+          endtry;
+        until( good_input );
+
+        mov( num_1, al);
+        if( num_1 > al )
+            stdout.put( "The first number ", num_1, " is greater than the second number ", num_2, ".", nl);
+        else if( num_1 < al)
+            stdout.put( "The second number ", num_2, " is greater than the first number ", num_1, ".", nl);
+        else
+            stdout.put( "The first number ", num_1, " is equivalent to the second number ", num_2, ".", nl);
+        endif;
+
+        stdout.put( "Continue? (y/n) " );
+        stdin.flushInput();
+        stdin.get( cont );
+        if( cont == 'n' )
+            break;
+   endfor;
+
+
+end Starter;
