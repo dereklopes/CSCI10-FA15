@@ -5,8 +5,7 @@
  * created on			1 September 2015
  * last modified on		1 September 2015
  *
- * 
- * 
+ * A program that compares two numbers 
  *
  */
 program Starter;
@@ -28,33 +27,58 @@ begin Starter;
 
     stdout.put( "Welcome to challenge 2!" );
 
-    mov( false, good_input );
     forever
+    mov( false, good_input );
         repeat
           try
-              stdout.put( "Enter a number 1-50: " );
-              std.get( num_1 );
-              if( num_1 < 51 )
-                  if( num_1 > 0 )
+              stdout.put(nl, "Enter a number 1-50: " );
+	      stdin.flushInput();
+              stdin.getu8();
+	      mov( al, num_1 );
+              if( num_1 < 51 ) then
+                  if( num_1 > 0 ) then
                       mov( true, good_input );
                   else
-                      stdout.put( "Number must be 1-50" );
+                      stdout.put( "Number must be at least 1" );
                   endif;
               else
-                  stdout.put( "Number must be 1-50" );
+                  stdout.put( "Number must be at most 50" );
               endif;
 
-          catch ( ex.ConversionError );
+          exception ( ex.ConversionError );
               stdout.put( "Invalid input", nl ); 
-          catch ( ex.ValueOutOfRange );
+          exception ( ex.ValueOutOfRange );
+              stdout.put( "Invalid input", nl ); 
+          endtry;
+        until( good_input );
+	mov( false, good_input );
+        repeat
+          try
+              stdout.put(nl, "Enter a second number 1-50: " );
+	      stdin.flushInput();
+              stdin.getu8();
+	      mov( al, num_2 );
+              if( num_2 < 51 ) then
+                  if( num_2 > 0 ) then
+                      mov( true, good_input );
+                  else
+                      stdout.put( "Number must be at least 1" );
+                  endif;
+              else
+                  stdout.put( "Number must be at most 50" );
+              endif;
+
+          exception ( ex.ConversionError );
+              stdout.put( "Invalid input", nl ); 
+          exception ( ex.ValueOutOfRange );
               stdout.put( "Invalid input", nl ); 
           endtry;
         until( good_input );
 
-        mov( num_1, al);
-        if( num_1 > al )
+        mov( num_2, bl);
+        if( num_1 > al ) then
             stdout.put( "The first number ", num_1, " is greater than the second number ", num_2, ".", nl);
-        else if( num_1 < al)
+        elseif( num_1 < al) then
             stdout.put( "The second number ", num_2, " is greater than the first number ", num_1, ".", nl);
         else
             stdout.put( "The first number ", num_1, " is equivalent to the second number ", num_2, ".", nl);
@@ -63,8 +87,7 @@ begin Starter;
         stdout.put( "Continue? (y/n) " );
         stdin.flushInput();
         stdin.get( cont );
-        if( cont == 'n' )
-            break;
+        breakif( cont == 'n' || cont == 'N');
    endfor;
 
 
