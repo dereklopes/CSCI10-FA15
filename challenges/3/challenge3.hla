@@ -1,0 +1,92 @@
+/*
+ * HLA Starter
+ *
+ * written by			Derek Lopes
+ * created on			9 September 2015
+ * last modified on		9 September 2015
+ *
+ * A program working with data and registers.
+ *
+ */
+program registers;
+
+// includes
+#include( "stdlib.hhf" )
+// static declarations
+	//none
+
+begin registers;
+
+forever
+
+// gets 4 uns8 numbers
+	stdout.put( nl, "Enter 4 numbers 0-255: ", nl );
+	stdin.getu8();
+	mov(al, dl);
+	stdin.getu8();
+	mov(al, cl);
+	stdin.getu8();
+	mov(al, bl);
+	stdin.getu8();
+// displays uns8 numbers
+	stdout.put ( "8-BIT:", nl );
+	stdout.put ( "The first number (dl) is $", dl, " in hexadecimal, ", (type uns8 dl), " in decimal.", nl)
+	stdout.put ( "The second number (cl) is $", cl, " in hexadecimal, ", (type uns8 cl), " in decimal.", nl)
+	stdout.put ( "The third number (bl) is $", bl, " in hexadecimal, ", (type uns8 bl), " in decimal.", nl)
+	stdout.put ( "The fourth number (al) is $", al, " in hexadecimal, ", (type uns8 al), " in decimal.", nl)
+	
+// gets 4 uns16 numbers
+	stdout.put( nl, "Enter 4 numbers 0-65535: ", nl );
+	stdin.getu16();
+	mov(ax, dx);
+	stdin.getu16();
+	mov(ax, cx);
+	stdin.getu16();
+	mov(ax, bx);
+	stdin.getu16();
+// displays uns16 numbers
+	stdout.put ( "16-BIT:", nl );
+	stdout.put ( "The first number (dx) is ", dx, " in hexadecimal, ", (type uns16 dx), " in decimal.", nl)
+	stdout.put ( "The second number (cx) is ", cx, " in hexadecimal, ", (type uns16 cx), " in decimal.", nl)
+	stdout.put ( "The third number (bx) is ", bx, " in hexadecimal, ", (type uns16 bx), " in decimal.", nl)
+	stdout.put ( "The fourth number (ax) is ", ax, " in hexadecimal, ", (type uns16 ax), " in decimal.", nl)
+// displays uns8 numbers
+	stdout.put ( "8-BIT:", nl );
+	stdout.put ( "The first number (dl) is $", dl, " in hexadecimal, ", (type uns8 dl), " in decimal.", nl)
+	stdout.put ( "The second number (cl) is $", cl, " in hexadecimal, ", (type uns8 cl), " in decimal.", nl)
+	stdout.put ( "The third number (bl) is $", bl, " in hexadecimal, ", (type uns8 bl), " in decimal.", nl)
+	stdout.put ( "The fourth number (al) is $", al, " in hexadecimal, ", (type uns8 al), " in decimal.", nl)
+
+// gets 4 uns32 numbers
+	stdout.put( nl, "Enter 4 numbers 0-4294967295: ", nl );
+	stdin.getu32();
+	mov(eax, edx);
+	stdin.getu32();
+	mov(eax, ecx);
+	stdin.getu32();
+	mov(eax, ebx);
+	stdin.getu32();
+// displays uns32 numbers
+	stdout.put ( "32-BIT:", nl );
+	stdout.put ( "The first number (edx) is ", edx, " in hexadecimal, ", (type uns32 edx), " in decimal.", nl)
+	stdout.put ( "The second number (ecx) is ", ecx, " in hexadecimal, ", (type uns32 ecx), " in decimal.", nl)
+	stdout.put ( "The third number (ebx) is ", ebx, " in hexadecimal, ", (type uns32 ebx), " in decimal.", nl)
+	stdout.put ( "The fourth number (eax) is ", eax, " in hexadecimal, ", (type uns32 eax), " in decimal.", nl)
+// displays uns16 numbers
+	stdout.put ( "16-BIT:", nl );
+	stdout.put ( "The first number (dx) is ", dx, " in hexadecimal, ", (type uns16 dx), " in decimal.", nl)
+	stdout.put ( "The second number (cx) is ", cx, " in hexadecimal, ", (type uns16 cx), " in decimal.", nl)
+	stdout.put ( "The third number (bx) is ", bx, " in hexadecimal, ", (type uns16 bx), " in decimal.", nl)
+	stdout.put ( "The fourth number (ax) is ", ax, " in hexadecimal, ", (type uns16 ax), " in decimal.", nl)
+// displays uns8 numbers
+	stdout.put ( "8-BIT:", nl );
+	stdout.put ( "The first number (dl) is $", dl, " in hexadecimal, ", (type uns8 dl), " in decimal.", nl)
+	stdout.put ( "The second number (cl) is $", cl, " in hexadecimal, ", (type uns8 cl), " in decimal.", nl)
+	stdout.put ( "The third number (bl) is $", bl, " in hexadecimal, ", (type uns8 bl), " in decimal.", nl)
+	stdout.put ( "The fourth number (al) is $", al, " in hexadecimal, ", (type uns8 al), " in decimal.", nl)
+
+        stdout.put( nl, "Run again? (1 for yes/0 for no) " );
+        stdin.getu8();
+        breakif( al != 1);
+endfor;
+end registers;
