@@ -46,10 +46,10 @@ forever
 	stdin.getu16();
 // displays uns16 numbers
 	stdout.put ( "16-BIT:", nl );
-	stdout.put ( "The first number (dx) is ", dx, " in hexadecimal, ", (type uns16 dx), " in decimal.", nl)
-	stdout.put ( "The second number (cx) is ", cx, " in hexadecimal, ", (type uns16 cx), " in decimal.", nl)
-	stdout.put ( "The third number (bx) is ", bx, " in hexadecimal, ", (type uns16 bx), " in decimal.", nl)
-	stdout.put ( "The fourth number (ax) is ", ax, " in hexadecimal, ", (type uns16 ax), " in decimal.", nl)
+	stdout.put ( "The first number (dx) is $", dx, " in hexadecimal, ", (type uns16 dx), " in decimal.", nl)
+	stdout.put ( "The second number (cx) is $", cx, " in hexadecimal, ", (type uns16 cx), " in decimal.", nl)
+	stdout.put ( "The third number (bx) is $", bx, " in hexadecimal, ", (type uns16 bx), " in decimal.", nl)
+	stdout.put ( "The fourth number (ax) is $", ax, " in hexadecimal, ", (type uns16 ax), " in decimal.", nl)
 // displays uns8 numbers
 	stdout.put ( "8-BIT:", nl );
 	stdout.put ( "The first number (dl) is $", dl, " in hexadecimal, ", (type uns8 dl), " in decimal.", nl)
@@ -68,16 +68,16 @@ forever
 	stdin.getu32();
 // displays uns32 numbers
 	stdout.put ( "32-BIT:", nl );
-	stdout.put ( "The first number (edx) is ", edx, " in hexadecimal, ", (type uns32 edx), " in decimal.", nl)
-	stdout.put ( "The second number (ecx) is ", ecx, " in hexadecimal, ", (type uns32 ecx), " in decimal.", nl)
-	stdout.put ( "The third number (ebx) is ", ebx, " in hexadecimal, ", (type uns32 ebx), " in decimal.", nl)
-	stdout.put ( "The fourth number (eax) is ", eax, " in hexadecimal, ", (type uns32 eax), " in decimal.", nl)
+	stdout.put ( "The first number (edx) is $", edx, " in hexadecimal, ", (type uns32 edx), " in decimal.", nl)
+	stdout.put ( "The second number (ecx) is $", ecx, " in hexadecimal, ", (type uns32 ecx), " in decimal.", nl)
+	stdout.put ( "The third number (ebx) is $", ebx, " in hexadecimal, ", (type uns32 ebx), " in decimal.", nl)
+	stdout.put ( "The fourth number (eax) is $", eax, " in hexadecimal, ", (type uns32 eax), " in decimal.", nl)
 // displays uns16 numbers
 	stdout.put ( "16-BIT:", nl );
-	stdout.put ( "The first number (dx) is ", dx, " in hexadecimal, ", (type uns16 dx), " in decimal.", nl)
-	stdout.put ( "The second number (cx) is ", cx, " in hexadecimal, ", (type uns16 cx), " in decimal.", nl)
-	stdout.put ( "The third number (bx) is ", bx, " in hexadecimal, ", (type uns16 bx), " in decimal.", nl)
-	stdout.put ( "The fourth number (ax) is ", ax, " in hexadecimal, ", (type uns16 ax), " in decimal.", nl)
+	stdout.put ( "The first number (dx) is $", dx, " in hexadecimal, ", (type uns16 dx), " in decimal.", nl)
+	stdout.put ( "The second number (cx) is $", cx, " in hexadecimal, ", (type uns16 cx), " in decimal.", nl)
+	stdout.put ( "The third number (bx) is $", bx, " in hexadecimal, ", (type uns16 bx), " in decimal.", nl)
+	stdout.put ( "The fourth number (ax) is $", ax, " in hexadecimal, ", (type uns16 ax), " in decimal.", nl)
 // displays uns8 numbers
 	stdout.put ( "8-BIT:", nl );
 	stdout.put ( "The first number (dl) is $", dl, " in hexadecimal, ", (type uns8 dl), " in decimal.", nl)
