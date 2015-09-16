@@ -1,0 +1,80 @@
+/*
+ * HLA Starter
+ *
+ * written by			Boyd Trolinger
+ * created on			10 August 2015
+ * last modified on		10 August 2015
+ *
+ * Random number guessing game. Number between 1 and 100, 10 guesses.
+ *
+ */
+program Starter;
+
+// includes
+#include( "stdlib.hhf" )
+// static declarations
+
+static
+  _generated: uns32;
+  guess: uns32;
+  gCount: uns8;
+  cont: char;
+
+// procedure forward declarations
+procedure getUns32;
+
+// procedure definitions
+begin getUns32;
+  forever
+    try
+      stdout.put(nl, "Enter a number between 1 and 100: " );
+      stdin.flushInput();
+      stdin.getu32();
+      mov( eax, guess );
+        if( guess <= 100 ) then
+          if( guess >= 1 ) then
+            break;
+          else
+            stdout.put( "Number must be at least 1" );
+          endif;
+        else
+          stdout.put( "Number must be at most 100" );
+        endif;
+    exception ( ex.ConversionError );
+      stdout.put( "You must enter an integer number.", nl ); 
+    exception ( ex.ValueOutOfRange );
+      stdout.put( "You must enter a number between 1 and 100.", nl ); 
+    endtry;
+  endfor;
+end getUns32;
+
+begin Starter;
+  rand.randomize();
+  forever
+    mov( 10, gCount); 
+    mov( rand.urange(1,100), _generated );
+    repeat
+      breakif( gCount == 0 );
+      getUns32();
+      dec( gCount );
+      mov( guess, ebx );
+      if ( ebx > _generated ) then
+        stdout.put( "Too high.", nl );
+      endif;
+      if ( ebx < _generated ) then
+        stdout.put( "Too low.", nl );
+      endif;
+    until ( ebx == _generated );           
+    if ( ebx == _generated ) then
+      stdout.put( "You guessed right! The number was ", _generated, nl);
+    else
+      stdout.put( "You ran out of guesses! The number was ", _generated, nl);
+    endif;
+    stdout.put( "Would you like to play again? (y/n): " );
+    stdin.flushInput();
+    stdin.get( cont );
+    breakif( cont == 'n' || cont == 'N');
+  endfor;
+
+end Starter;
+

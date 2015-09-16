@@ -32,7 +32,7 @@ begin Starter;
         repeat
           try
               stdout.put(nl, "Enter a number 1-50: " );
-	      stdin.flushInput();
+	            stdin.flushInput();
               stdin.getu8();
 	      mov( al, num_1 );
               if( num_1 < 51 ) then
