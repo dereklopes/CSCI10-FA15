@@ -1,0 +1,151 @@
+/*
+ * Challenge 5
+ *
+ * written by			Derek Lopes
+ * created on			23 September 2015
+ * last modified on		23 September 2015
+ *
+ * A program that emulates a casino style slot machine with three wheels.
+ *
+ */
+program Starter;
+
+// includes
+#include( "stdlib.hhf" )
+// static declarations
+
+static
+  bankroll: uns16:= 1000;
+  wager: uns16;
+
+// procedure forward declarations
+procedure getUns16( prompt:string; min:uns16; max:uns16 ); @returns("ax"); @forward;
+
+procedure spinOneWheel; @returns("eax"); @forward;
+
+procedure showSymbol( code:uns32 ); @forward;
+
+procedure spinAllWheels; @returns("al"); @forward;
+// procedure definitions
+procedure getUns16( prompt:string; min:uns16; max:uns16 );
+
+begin getUns16;
+  stdout.put(prompt);
+  forever
+    try
+      stdin.getu16();
+      unprotected
+        if( ax >= min && ax <= max ) then
+          break;
+        else
+          stdout.put("Value must be at least ", min, " and at most ", max, ".", nl);
+        endif;
+    anyexception
+      stdout.put("Invalid input");
+    endtry;
+  endfor;
+
+end getUns16;
+
+
+procedure spinOneWheel;
+
+begin spinOneWheel;
+
+  rand.urange(1, 100);
+  if( eax < 80 ) then
+    mov(1, eax);
+  elseif( eax < 95 ) then
+    mov(2, eax);
+  else
+    mov(3, eax);
+  endif;
+
+end spinOneWheel;
+
+
+procedure showSymbol( code:uns32 );
+
+begin showSymbol;
+
+  if( code == 1 ) then
+    stdout.put( "@CHERRY@ " );
+  elseif( code == 2 ) then
+    stdout.put( "$MONEY$ " );
+  elseif( code == 3 ) then
+    stdout.put( "*STAR* " );
+  endif;
+
+end showSymbol;
+
+
+procedure spinAllWheels;
+var
+  wheelOne: uns32;
+  wheelTwo: uns32;
+  wheelThree: uns32; 
+begin spinAllWheels;
+
+  spinOneWheel();
+  mov( eax, wheelOne );
+  showSymbol( wheelOne );
+  spinOneWheel();
+  mov( eax, wheelTwo );
+  showSymbol( wheelTwo );
+  spinOneWheel();
+  mov( eax, wheelThree );
+  showSymbol( wheelThree );
+
+  mov( wheelOne, ebx );
+  if( ebx != wheelTwo || ebx != wheelThree ) then
+    mov( 0, al );
+  elseif ( ebx == wheelTwo || ebx == wheelThree) then
+    if( ebx == 1 ) then
+      mov( 1, al );
+    elseif( ebx == 2 ) then
+      mov( 2, al );
+    elseif( ebx == 3 ) then
+      mov( 2, al );
+    endif;
+  endif;
+
+end spinAllWheels;
+
+begin Starter;
+
+  rand.randomize();
+  forever
+    stdout.put( "Your current bankroll: $", bankroll, nl);
+    getUns16( "Enter your wager (1, 2, or 3): ", 1, 3 );
+    stdout.put( nl );
+    mov( ax, wager );
+    spinAllWheels();
+    if( al == 0 ) then
+      mov( wager, bx );
+      sub( bx, bankroll );
+      stdout.put( "You lost! Subtracting wager amount...", nl );
+    elseif( al == 1 ) then
+      stdout.put( "You won! No money was lost... ", nl );
+    elseif( al == 2 ) then
+      mov( wager, ax );
+      imul( 2, ax );
+      add( ax, bankroll );
+      stdout.put( "You won! Your wager has been doubled", nl );
+    elseif( al == 3 ) then
+      mov( wager, ax );
+      imul( 3, ax );
+      add( ax, bankroll );
+      stdout.put( "You won! Your wager has been trippled...", nl );
+    endif;
+    if( bankroll == 0 ) then
+      stdout.put( "You ran out of money!", nl );
+      break;
+    endif;
+    getUns16( "Would you like to play again? (0=no, 1=yes) ", 0, 1 );
+    if( ax == 0 ) then
+      stdout.put( "You leave with $", bankroll, nl);
+      break;
+    endif;
+  endfor;
+
+end Starter;

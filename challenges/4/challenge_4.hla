@@ -1,9 +1,9 @@
 /*
- * HLA Starter
+ * Challenge 4
  *
- * written by			Boyd Trolinger
- * created on			10 August 2015
- * last modified on		10 August 2015
+ * written by			Derek Lopes
+ * created on			16 September 2015
+ * last modified on		16 September 2015
  *
  * Random number guessing game. Number between 1 and 100, 10 guesses.
  *
