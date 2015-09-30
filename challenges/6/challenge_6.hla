@@ -1,0 +1,81 @@
+/*
+ * Challenge 6
+ *
+ * written by			Derek Lopes
+ * created on			30 Spetember 2015
+ * last modified on		30 Spetember 2015
+ *
+ * A program that finds factors of a number given by the user.
+ *
+ */
+program challenge_6;
+
+// includes
+#include( "stdlib.hhf" )
+// static declarations
+static
+  number: uns16;
+
+// procedure forward declarations
+procedure getUns16( prompt:string; min:uns16; max:uns16 ); @returns( "ax" ); @forward;
+
+procedure showFactors( value:uns16 ); @forward;
+
+// procedure definitions
+procedure getUns16( prompt:string; min:uns16; max:uns16 );
+begin getUns16;
+  stdout.put(prompt);
+  forever
+    try
+      stdin.getu16();
+      unprotected
+        if( (ax >= min && ax <= max) || ax == 0 ) then
+          break;
+        else
+          stdout.put("Value must be at least ", min, " and at most ", max, ".", nl);
+        endif;
+    anyexception
+      stdout.put("Invalid input");
+    endtry;
+  endfor;
+end getUns16;
+
+procedure showFactors( value:uns16 );
+var
+  factors: uns16; 
+begin showFactors;
+  mov( 0, factors );
+  
+  for( mov( 1, cx ); cx <= value; inc(cx) ) do
+    mov( number, ax );
+    mov( 0, dx );
+    div( cx, dx:ax );
+    if( dx == 0 ) then
+      stdout.put((type uns16 cx), " ");
+      if( cx != 1 && cx != value ) then
+        inc( factors );
+      endif;
+    endif;
+    breakif( cx == 65535 );
+  endfor;
+
+  if( factors > 0 ) then
+    mov( 0, al );
+  else
+    mov( 1, al);
+  endif;
+end showFactors;
+
+begin challenge_6;
+  forever
+    getUns16( "enter a number (2-655335) or 0 to exit: ", 2, 65535);
+    mov( ax, number );
+    breakif( number == 0 );
+    showFactors( number );
+    if( al == 0 ) then
+      stdout.put(nl, number, " is not prime.", nl );
+    else
+      stdout.put(nl, number, " is prime.", nl);
+    endif;
+  endfor;
+end challenge_6;
