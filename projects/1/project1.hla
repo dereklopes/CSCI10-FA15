@@ -1,0 +1,137 @@
+/*
+ * Project 1 - Vending Machine
+ *
+ * written by			    Derek Lopes
+ * created on			    9 October 2015
+ * last modified on		9 October 2015
+ *
+ * 
+ *
+ */
+program project1;
+
+// includes
+#include( "stdlib.hhf" )
+// static declarations
+static
+  credits: uns16 := 1000;
+  n_snickers: uns8 := 5;
+  n_mounds: uns8 := 3;
+  n_aj: uns8 := 6;
+  n_mm: uns8 := 8;
+  n_skittles: uns8 := 4;
+  c_snickers: uns8 := 100;
+  c_mounds: uns8 := 75;
+  c_aj: uns8 := 75;
+  c_mm: uns8 := 125;
+  c_skittles: uns8 := 125;
+
+// procedure forward declarations
+procedure listItems(); @forward;
+
+procedure getUns8( prompt:string; min:uns8; max:uns8 ); @returns( "al" ); @forward;
+
+procedure checkStock( item:uns8 ); @returns( "bl" ); @forward;
+
+procedure getCredits( item:uns8 ); @returns( "bl" ); @forward;
+
+procedure buyItem( item:uns8 ); @forwared;
+// procedure definitions
+procedure listItems();
+begin listItems;
+  stdout.put( "[1] Snickers: ", n_snickers, " remaining", nl);
+  stdout.put( "[2] Mounds: ", n_mounds, " remaining", nl);
+  stdout.put( "[3] Almond Joy: ", n_aj, " remaining", nl);
+  stdout.put( "[4] M&M's: ", n_mm, " remaining", nl);
+  stdout.put( "[5] Skittles: ", n_skittles, " remaining", nl);
+end listItems;
+
+procedure getUns8( prompt:string; min:uns8; max:uns8 );
+begin getUns8;
+  stdout.put(prompt);
+  forever
+    try
+      stdin.getu8();
+      unprotected
+        if( (al >= min && al <= max) || al == 0 ) then
+          break;
+        else
+          stdout.put("Value must be at least ", min, " and at most ", max, ".", nl);
+        endif;
+    anyexception
+      stdout.put("Invalid input");
+    endtry;
+  endfor;
+end getUns8;
+
+procedure checkStock( item:uns8 );
+begin checkStock;
+  if ( item == 1 && n_snickers > 0 ) then
+    mov( 1, bl );
+  else if ( item == 2 && n_mounds > 0 )
+    mov( 1, bl );
+  else if ( item == 3 && n_aj > 0 )
+    mov( 1, bl );
+  else if ( item == 4 && n_mm > 0 )
+    mov( 1, bl );
+  else if ( item == 5 && n_skittles > 0 )
+    mov( 1, bl );
+  else
+    mov( 0, bl );
+  endif;
+end checkStock;
+
+procedure getCredits( item:uns8 );
+begin getCredits;
+  forever
+    if ( item == 1 ) then
+      stdout.put( "Please pay at least ", c_snickers, " credits: " );
+      mov( c_snickers, cx );
+    else if ( item == 2 )
+      stdout.put( "Please pay at least ", c_mounds, " credits: " );
+      mov( c_mounds, cx );
+    else if ( item == 3 )
+      stdout.put( "Please pay at least ", c_aj, " credits: " );
+      mov( c_aj, cx );
+    else if ( item == 4 )
+      stdout.put( "Please pay at least ", c_mm, " credits: " );
+      mov( c_mm, cx );
+    else if ( item == 5 )
+      stdout.put( "Please pay at least ", c_skittles, " credits: " );
+      mov( c_skittles, cx );
+    endif;
+    try
+      stdin.getu8();
+      unprotected
+        if ( al >= cx && al <= credits ) then
+          break;
+        else
+          stdout.put("Value must be at least ", min, " and at most ", max, ".", nl);
+        endif;
+    anyexception
+      stdout.put("Invalid input");
+    endtry;
+  endfor;
+end getCredits;
+
+procedure buyItem( item:uns8 );
+begin buyItem;
+  if ( item == 1 ) then
+    
+
+  endif;
+end butItem;
+
+begin project1;
+  forever
+    listItems();
+    getUns8( "Choose an item [1-5] or 0 to leave: ", 1, 5 );
+    breakif( al == 0 );
+    checkStock( al );
+    if ( bl == 1 ) then
+      buyItem( al );
+    else
+      stdout.put( "Item is sold out. Please select a different item.", nl );
+    endif;
+  endfor;
+end project1;
