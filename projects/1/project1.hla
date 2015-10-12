@@ -5,13 +5,14 @@
  * created on			    9 October 2015
  * last modified on		9 October 2015
  *
- * 
+ * A vending machine.
  *
  */
 program project1;
 
 // includes
 #include( "stdlib.hhf" )
+
 // static declarations
 static
   credits: uns16 := 1000;
@@ -20,14 +21,14 @@ static
   n_aj: uns8 := 6;
   n_mm: uns8 := 8;
   n_skittles: uns8 := 4;
-  c_snickers: uns8 := 100;
-  c_mounds: uns8 := 75;
-  c_aj: uns8 := 75;
-  c_mm: uns8 := 125;
-  c_skittles: uns8 := 125;
+  c_snickers: uns16 := 100;
+  c_mounds: uns16 := 75;
+  c_aj: uns16 := 75;
+  c_mm: uns16 := 125;
+  c_skittles: uns16 := 125;
 
 // procedure forward declarations
-procedure listItems(); @forward;
+procedure listItems; @forward;
 
 procedure getUns8( prompt:string; min:uns8; max:uns8 ); @returns( "al" ); @forward;
 
@@ -35,15 +36,17 @@ procedure checkStock( item:uns8 ); @returns( "bl" ); @forward;
 
 procedure getCredits( item:uns8 ); @returns( "bl" ); @forward;
 
-procedure buyItem( item:uns8 ); @forwared;
+procedure buyItem( item:uns8 ); @forward;
+
+procedure getReceipt; @forward;
 // procedure definitions
-procedure listItems();
+procedure listItems;
 begin listItems;
-  stdout.put( "[1] Snickers: ", n_snickers, " remaining", nl);
-  stdout.put( "[2] Mounds: ", n_mounds, " remaining", nl);
-  stdout.put( "[3] Almond Joy: ", n_aj, " remaining", nl);
-  stdout.put( "[4] M&M's: ", n_mm, " remaining", nl);
-  stdout.put( "[5] Skittles: ", n_skittles, " remaining", nl);
+  stdout.put( "[1] Snickers: ", n_snickers, " remaining (100 credits)", nl);
+  stdout.put( "[2] Mounds: ", n_mounds, " remaining (75 credits)", nl);
+  stdout.put( "[3] Almond Joy: ", n_aj, " remaining (75 credits)", nl);
+  stdout.put( "[4] M&M's: ", n_mm, " remaining (125 credits)", nl);
+  stdout.put( "[5] Skittles: ", n_skittles, " remaining (125 credits)", nl, nl);
 end listItems;
 
 procedure getUns8( prompt:string; min:uns8; max:uns8 );
@@ -66,15 +69,15 @@ end getUns8;
 
 procedure checkStock( item:uns8 );
 begin checkStock;
-  if ( item == 1 && n_snickers > 0 ) then
+  if ( (item == 1) && (n_snickers > 0) ) then
     mov( 1, bl );
-  else if ( item == 2 && n_mounds > 0 )
+  elseif ( (item == 2) && (n_mounds > 0) ) then
     mov( 1, bl );
-  else if ( item == 3 && n_aj > 0 )
+  elseif ( (item == 3) && (n_aj > 0) ) then
     mov( 1, bl );
-  else if ( item == 4 && n_mm > 0 )
+  elseif ( (item == 4) && (n_mm > 0) ) then
     mov( 1, bl );
-  else if ( item == 5 && n_skittles > 0 )
+  elseif ( (item == 5) && (n_skittles > 0) ) then
     mov( 1, bl );
   else
     mov( 0, bl );
@@ -82,48 +85,128 @@ begin checkStock;
 end checkStock;
 
 procedure getCredits( item:uns8 );
+var
+  dollars: uns8;
+  quarters: uns8;
+  dimes: uns8;
+  nickles: uns8;
+  pennies: uns8;
+  change: uns16;
 begin getCredits;
   forever
     if ( item == 1 ) then
       stdout.put( "Please pay at least ", c_snickers, " credits: " );
       mov( c_snickers, cx );
-    else if ( item == 2 )
+    elseif ( item == 2 ) then
       stdout.put( "Please pay at least ", c_mounds, " credits: " );
       mov( c_mounds, cx );
-    else if ( item == 3 )
+    elseif ( item == 3 ) then
       stdout.put( "Please pay at least ", c_aj, " credits: " );
       mov( c_aj, cx );
-    else if ( item == 4 )
+    elseif ( item == 4 ) then
       stdout.put( "Please pay at least ", c_mm, " credits: " );
       mov( c_mm, cx );
-    else if ( item == 5 )
+    elseif ( item == 5 ) then
       stdout.put( "Please pay at least ", c_skittles, " credits: " );
       mov( c_skittles, cx );
     endif;
     try
-      stdin.getu8();
+      stdin.getu16();
+      // ax: amount paid
+      // cx: cost
+      // credits: amount in wallet
       unprotected
-        if ( al >= cx && al <= credits ) then
+        if ( ax > credits ) then
+          stdout.put( nl, "You do not have enough money to pay that amount!", nl, nl );
+          mov( 0, bl );
           break;
-        else
-          stdout.put("Value must be at least ", min, " and at most ", max, ".", nl);
+        elseif ( ax >= cx && ax <= credits ) then
+          stdout.put( nl, (type uns16 ax), " credits were taken.", nl );
+          sub( cx, credits ); // removes from total 
+          sub( cx, ax ); // finds the change
+          // ax: change
+          stdout.put( (type uns16 ax), " of change returned in the form of:", nl ); 
+          movzx( ax, eax );
+          div( 100, dx:ax );
+          stdout.put( (type uns16 ax), " dollars", nl );
+          mov( dx, ax );
+          mov( 0, dx );
+          div( 25, dx:ax );
+          stdout.put( (type uns16 ax), " quarters", nl );
+          mov( dx, ax );
+          mov( 0, dx );
+          div( 10, dx:ax );
+          stdout.put( (type uns16 ax), " dimes", nl );
+          mov( dx, ax );
+          mov( 0, dx );
+          div( 5, dx:ax );
+          stdout.put( (type uns16 ax), " nickles", nl );
+          stdout.put( (type uns16 dx), " pennies", nl, nl );
+          mov( 1, bl );
+          break;
+        elseif ( ax < cx ) then
+          stdout.put( nl, "Value must be at least ", (type uns16 cx), ".", nl, nl );
         endif;
     anyexception
-      stdout.put("Invalid input");
+      stdout.put("Invalid input", nl);
     endtry;
   endfor;
 end getCredits;
 
 procedure buyItem( item:uns8 );
 begin buyItem;
-  if ( item == 1 ) then
-    
-
+  getCredits( item );
+  if ( bl != 0 ) then
+   if ( item == 1 ) then
+     dec( n_snickers );
+   elseif ( item == 2 ) then
+     dec( n_mounds ); 
+   elseif ( item == 3 ) then
+     dec( n_aj ); 
+   elseif ( item == 4 ) then
+     dec( n_mm ); 
+   elseif ( item == 5 ) then
+     dec( n_skittles ); 
+   endif;
   endif;
-end butItem;
+end buyItem;
+
+procedure getReceipt;
+begin getReceipt;
+// 5 3 6 8 4
+  stdout.put( nl, "----- RECEIPT -----", nl );
+  mov( 5, ch );
+  sub( n_snickers, ch );
+  mov( 100, al );
+  mul( ch, al );
+  stdout.put( "Snickers: ", (type uns8 ch) , " totaling ", (type uns16 ax), " credits", nl ); 
+  mov( 3, ch );
+  sub( n_mounds, ch );
+  mov( 75, al );
+  mul( ch, al );
+  stdout.put( "Mounds: ", (type uns8 ch) , " totaling ", (type uns16 ax), " credits", nl ); 
+  mov( 6, ch );
+  sub( n_aj, ch );
+  mov( 75, al );
+  mul( ch, al );
+  stdout.put( "Almond Joy: ", (type uns8 ch) , " totaling ", (type uns16 ax), " credits", nl ); 
+  mov( 8, ch );
+  sub( n_mm, ch );
+  mov( 125, al );
+  mul( ch, al );
+  stdout.put( "M&M: ", (type uns8 ch) , " totaling ", (type uns16 ax), " credits", nl ); 
+  mov( 4, ch );
+  sub( n_skittles, ch );
+  mov( 125, al );
+  mul( ch, al );
+  stdout.put( "Skittles: ", (type uns8 ch) , " totaling ", (type uns16 ax), " credits", nl, nl );
+end getReceipt;
 
 begin project1;
+  stdout.put( nl );
   forever
+    stdout.put( "----- VENDING MACHINE -----", nl );
+    stdout.put( "Credits held: ", credits, nl );
     listItems();
     getUns8( "Choose an item [1-5] or 0 to leave: ", 1, 5 );
     breakif( al == 0 );
@@ -131,7 +214,8 @@ begin project1;
     if ( bl == 1 ) then
       buyItem( al );
     else
-      stdout.put( "Item is sold out. Please select a different item.", nl );
+      stdout.put( nl, "Item is sold out. Please select a different item.", nl, nl );
     endif;
   endfor;
+  getReceipt();
 end project1;
