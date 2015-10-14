@@ -1,0 +1,155 @@
+/*
+ * Challenge 7
+ *
+ * written by			Derek Lopes
+ * created on			14 October 2015
+ * last modified on		14 October 2015
+ *
+ * Programming challenge 7; practicing push and pop.
+ *
+ */
+program challenge7;
+
+// includes
+#include( "stdlib.hhf" )
+// static declarations
+  //none
+// procedure forward declarations
+procedure getUns8( prompt:string; min:uns8; max:uns8 ); @returns( "al" ); @forward;
+
+procedure showGraph( value:uns8 ); @forward;
+
+procedure totalAndAverage( value1:uns8; value2:uns8; value3:uns8; value4:uns8 ); @forward;
+
+procedure min( value1:uns8; value2:uns8; value3:uns8; value4:uns8 ); @forward;
+
+procedure max( value1:uns8; value2:uns8; value3:uns8; value4:uns8 ); @forward;
+// procedure definitions
+procedure getUns8( prompt:string; min:uns8; max:uns8 );
+begin getUns8;
+  push( ebx );
+  push( ecx );
+  // push( edx );
+  push( esi );
+  push( edi );
+  forever
+    stdout.put( prompt );
+    try
+      stdin.getu8();
+      unprotected
+        if( al >= min && al <= max ) then
+          break;
+        else
+          stdout.put( "Value must be at least ", min, " and at most ", max, ".", nl );
+        endif;
+    anyexception
+      stdout.put( "Invalid input", nl );
+    endtry;
+  endfor;
+  pop( edi );
+  pop( esi );
+  // pop( edx );
+  pop( ecx );
+  pop( ebx );
+end getUns8;
+
+procedure showGraph( value:uns8 );
+begin showGraph;
+  stdout.put( value, " " );
+  if ( value < 100 ) then
+    stdout.put( " " );
+  endif;
+  push( eax );
+  movzx( value, ax );
+  div( 10, ax );
+  while( al > 0 ) do
+    stdout.put( "*" );
+    dec( al );
+  endwhile;
+  stdout.newln();
+  pop( eax );
+end showGraph;
+
+procedure totalAndAverage( value1:uns8; value2:uns8; value3:uns8; value4:uns8 );
+begin totalAndAverage;
+  push( eax );
+  push( ebx );
+  push( ecx );
+  push( edx );
+
+  mov( 0, ah );
+  mov( 0, bh );
+  mov( 0, ch );
+  mov( 0, dh );
+  
+  add( bx, ax );
+  add( cx, ax );
+  add( dx, ax );
+  stdout.put( "Total: ", (type uns16 ax), nl );
+
+  mov( 0, dx );
+  div( 4, dx:ax );
+  stdout.put( "Average: ", (type uns16 ax), nl );
+
+  pop( edx );
+  pop( ecx );
+  pop( ebx );
+  pop( eax ); 
+end totalAndAverage;
+
+procedure min( value1:uns8; value2:uns8; value3:uns8; value4:uns8 );
+begin min;
+  if ( (al <= bl) && (al <= cl) && (al <= dl) ) then
+    stdout.put( "Min: ", (type uns8 al), nl );
+  elseif ( (bl <= al) && (bl <= cl) && (bl <= dl) ) then
+    stdout.put( "Min: ", (type uns8 bl), nl );
+  elseif ( (cl <= al) && (cl <= bl) && (cl <= dl) ) then
+    stdout.put( "Min: ", (type uns8 cl), nl );
+  else
+    stdout.put( "Min: ", (type uns8 dl), nl );
+  endif;
+end min;
+
+procedure max( value1:uns8; value2:uns8; value3:uns8; value4:uns8 );
+begin max;
+  if ( (al >= bl) && (al >= cl) && (al >= dl) ) then
+    stdout.put( "Max: ", (type uns8 al), nl );
+  elseif ( (bl >= al) && (bl >= cl) && (bl >= dl) ) then
+    stdout.put( "Max: ", (type uns8 bl), nl );
+  elseif ( (cl >= al) && (cl >= bl) && (cl >= dl) ) then
+    stdout.put( "Max: ", (type uns8 cl), nl );
+  else
+    stdout.put( "Max: ", (type uns8 dl), nl );
+  endif;
+end max;
+
+begin challenge7;
+  stdout.newln();
+  forever
+    stdout.put( "--------------------", nl );
+    getUns8( "Number 1: ", 0, 255 );
+    push( eax );
+    getUns8( "Number 2: ", 0, 255 );
+    mov( al, bl );
+    getUns8( "Number 3: ", 0, 255 );
+    mov( al, cl );
+    getUns8( "Number 4: ", 0, 255 );
+    mov( al, dl );
+    pop( eax );
+    stdout.put( "Entered numbers: ", (type uns8 al), " ", (type uns8 bl), " ", 
+                (type uns8 cl), " ", (type uns8 dl), nl );
+    stdout.put( "--------------------", nl );
+    showGraph( al );
+    showGraph( bl );
+    showGraph( cl );
+    showGraph( dl );
+    stdout.put( "--------------------", nl );
+    totalAndAverage( al, bl, cl, dl );
+    min( al, bl, cl, dl );
+    max( al, bl, cl, dl );
+    stdout.put( "--------------------", nl );
+    getUns8( "Run again? (1=yes, 0=no): ", 0, 1 );
+    stdout.put( "--------------------", nl, nl );
+    breakif( al == 0 );
+  endfor;
+end challenge7;
