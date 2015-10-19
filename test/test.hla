@@ -1,0 +1,57 @@
+/*
+ * HLA Starter
+ *
+ * written by			Boyd Trolinger
+ * created on			10 August 2015
+ * last modified on		10 August 2015
+ *
+ * This program is provided as an example of source code documentation
+ * for CSCI 10 at Butte College. A brief description should be provided
+ * for each program you implement in this course.
+ *
+ */
+program Starter;
+
+// includes
+#include("stdlib.hhf")
+
+// static declarations
+
+// procedure forward declarations
+procedure showBinary( value: byte );
+begin showBinary;
+  push( eax );
+  push( ecx );
+  
+  mov( value, al );
+  stdout.put( "%" )
+  for( mov( 0, cl ); cl < 8; inc( cl ) ) do
+    shl( 1, al );
+    if ( @c ) then
+      stdout.put( "1" );
+    else
+      stdout.put( "0" );
+    endif;
+
+    if ( cl == 3 ) then
+      stdout.put( "_" );
+    endif;
+  endfor;
+
+  stdout.newln();
+
+  pop( ecx );
+  pop( eax );
+
+end showBinary;
+
+begin Starter;
+
+  mov( %1111_1111, al );
+  add( %0000_0001, al );
+  showBinary( al );
+  if ( @c ) then
+    stdout.put( "OVERFLOW" );
+  endif;
+
+end Starter;
