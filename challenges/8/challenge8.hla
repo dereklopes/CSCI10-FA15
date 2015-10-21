@@ -1,0 +1,130 @@
+/*
+ * Challenge 8
+ *
+ * written by			Derek Lopes
+ * created on			21 October 2015
+ * last modified on		21 October 2015
+ *
+ * A challenge dealing with binary arithmetic and instructions.
+ *
+ */
+program challenge8;
+
+// includes
+#include("stdlib.hhf")
+
+// static declarations
+
+// procedure forward declarations
+procedure getUns8( prompt:string; min:uns8; max:uns8 ); @returns( "al" ); @forward;
+
+procedure showBits( value: byte ); @forward;
+//procedure definitions
+procedure getUns8( prompt:string; min:uns8; max:uns8 );
+begin getUns8;
+  push( ebx );
+  push( ecx );
+  // push( edx );
+  push( esi );
+  push( edi );
+  forever
+    stdout.put( prompt );
+    try
+      stdin.getu8();
+      unprotected
+        if( al >= min && al <= max ) then
+          break;
+        else
+          stdout.put( "Value must be at least ", min, " and at most ", max, ".", nl );
+        endif;
+    anyexception
+      stdout.put( "Invalid input", nl );
+    endtry;
+  endfor;
+  pop( edi );
+  pop( esi );
+  // pop( edx );
+  pop( ecx );
+  pop( ebx );
+end getUns8;
+
+procedure showBits( value: byte );
+begin showBits;
+  push( eax );
+  push( ecx );
+  
+  mov( value, al );
+  stdout.put( "%" )
+  for( mov( 0, cl ); cl < 8; inc( cl ) ) do
+    shl( 1, al );
+    if ( @c ) then
+      stdout.put( "1" );
+    else
+      stdout.put( "0" );
+    endif;
+
+    if ( cl == 3 ) then
+      stdout.put( "_" );
+    endif;
+  endfor;
+
+  stdout.newln();
+
+  pop( ecx );
+  pop( eax );
+
+end showBits;
+
+begin challenge8;
+  forever
+    stdout.put( nl, "--------------------", nl );
+
+    // PART ONE
+    stdout.put( nl, "PART ONE: ror,rol,shr,shl", nl );
+    getUns8( "Enter a number from 0-255:  ", 0, 255 ); 
+    stdout.put( "input [decimal]:            ", (type uns8 al), " input [binary]:            " );
+    showBits( al );
+
+    ror( 1, al );
+    stdout.put( "rotate right one [decimal]: ", (type uns8 al), " rotate right one [binary]: " );
+    showBits( al );
+
+    rol( 1, al );
+    stdout.put( "rotate left one [decimal]:  ", (type uns8 al), " rotate left one [binary]:  " );
+    showBits( al );
+
+    shr( 1, al );
+    stdout.put( "shift right one [decimal]:  ", (type uns8 al), " shift right one [binary]:  " );
+    showBits( al );
+
+    shl( 1, al );
+    stdout.put( "shift left one [decimal]:   ", (type uns8 al), " shift left one [binary]:   " );
+    showBits( al );
+
+    stdout.put( nl, "--------------------", nl );
+    // PART TWO
+    stdout.put( nl, "PART TWO: add", nl );
+    getUns8( "Enter a number from 0-255:       ", 0, 255 );
+    stdout.put( "first input [decimal]:           ", (type uns8 al), " first input [binary]:  " );
+    showBits( al );
+    mov( al, bl );
+    getUns8( "Enter another number from 0-255: ", 0, 255 );
+    stdout.put( "second input [decimal]:          ", (type uns8 al), " second input [binary]: " );
+    showBits( al );
+
+    add( bl, al ); 
+    if( @c ) then
+      stdout.put( "CARRY BIT SET/OVERFLOW", nl);
+    endif;
+    stdout.put( "sum [decimal]:                   ", (type uns8 al), " sum [binary]:          " );
+    showBits( al );
+
+    stdout.put( nl, "--------------------", nl, nl );
+    // END
+    getUns8( "Retry? (0=no, 1=yes): ", 0, 1 );
+    if ( al == 0 ) then
+      stdout.put( nl, "--------------------", nl, nl );
+      break;
+    endif;
+  endfor;
+end challenge8;
