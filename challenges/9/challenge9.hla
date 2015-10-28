@@ -1,0 +1,126 @@
+/*
+ * Challenge 9
+ *
+ * written by			Boyd Trolinger
+ * created on			10 August 2015
+ * last modified on		10 August 2015
+ *
+ * This program is provided as an example of source code documentation
+ * for CSCI 10 at Butte College. A brief description should be provided
+ * for each program you implement in this course.
+ *
+ */
+program challenge9;
+
+// includes
+#include ("stdlib.hhf")
+
+// procedure forward declarations
+procedure getUns8( prompt:string; min:uns8; max:uns8 ); @returns( "al" ); @forward;
+
+procedure showBits( value: byte ); @forward;
+
+procedure getInt8( prompt:string; min:uns8; max:uns8 ); @returns( "al" ); @forward;
+
+// procedure definitions
+begin getUns8;
+  push( ebx );
+  push( ecx );
+  // push( edx );
+  push( esi );
+  push( edi );
+  forever
+    stdout.put( prompt );
+    try
+      stdin.getu8();
+      unprotected
+        if( al >= min && al <= max ) then
+          break;
+        else
+          stdout.put( "Value must be at least ", min, " and at most ", max, ".", nl );
+        endif;
+    anyexception
+      stdout.put( "Invalid input", nl );
+    endtry;
+  endfor;
+  pop( edi );
+  pop( esi );
+  // pop( edx );
+  pop( ecx );
+  pop( ebx );
+end getUns8;
+
+begin getInt8;
+  push( ebx );
+  push( ecx );
+  // push( edx );
+  push( esi );
+  push( edi );
+  forever
+    stdout.put( prompt );
+    try
+      stdin.geti8();
+      unprotected
+        if( al >= min && al <= max ) then
+          break;
+        else
+          stdout.put( "Value must be at least ", min, " and at most ", max, ".", nl );
+        endif;
+    anyexception
+      stdout.put( "Invalid input", nl );
+    endtry;
+  endfor;
+  pop( edi );
+  pop( esi );
+  // pop( edx );
+  pop( ecx );
+  pop( ebx );
+end getInt8;
+
+procedure showBits( value: byte );
+begin showBits;
+  push( eax );
+  push( ecx );
+  
+  mov( value, al );
+  stdout.put( "%" )
+  for( mov( 0, cl ); cl < 8; inc( cl ) ) do
+    shl( 1, al );
+    if ( @c ) then
+      stdout.put( "1" );
+    else
+      stdout.put( "0" );
+    endif;
+
+    if ( cl == 3 ) then
+      stdout.put( "_" );
+    endif;
+  endfor;
+
+  stdout.newln();
+
+  pop( ecx );
+  pop( eax );
+
+end showBits;
+
+begin challenge9;
+
+  // PART 1
+  stdout.put( nl, "PART ONE: not", nl );
+  getUns8( "Please enter a number: ", 0, 255 );
+  stdout.put( nl, "input [decimal]: ", (type uns8 al), nl );
+  stdout.put( "input [binary]: " );
+  showBits( al );
+  stdout.newln();
+  not( al );
+  stdout.put( "bitwise compmlement [decimal]: ", (type uns8 al), nl );
+  stdout.put( "bitwise complement [binary]: " )
+  showBits( al );
+  stdout.newln();
+  
+  stdout.put( "Press ENTER to continue" );
+  stdin.readLn();
+  console.cls();
+
+end challenge9;
