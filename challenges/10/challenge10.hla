@@ -1,0 +1,290 @@
+/*
+ * Challenge 10
+ *
+ * written by			Derek Lopes
+ * created on			3 November 2015
+ * last modified on		4 November 2015
+ *
+ * This program is provided as an example of source code documentation
+ * for CSCI 10 at Butte College. A brief description should be provided
+ * for each program you implement in this course.
+ *
+ */
+program challenge10;
+
+// includes
+#include( "stdlib.hhf" )
+// static declarations
+static:
+  cellAmount: uns32;
+  dataType: uns8;
+  pointerToArray: dword;
+// procedure forward declarations
+procedure editCell( arrayPtr:dword; index:uns32; type:uns8 ); @forward;
+
+procedure displayCells( arrayPtr:dword; amount:uns32; type:uns8 ); @forward;
+
+procedure computeLargest( arrayPtr:dword; size:uns32; type:uns8 ); @forward;
+
+procedure getUns8( prompt:string; min:uns8; max:uns8 ); @returns( "al" ); @forward;
+
+procedure getUns32( prompt:string; min:uns8; max:uns8 ); @returns( "eax" ); @forward;
+
+procedure getInt8( prompt:string; min:Int8; max:Int8 ); @returns( "al" ); @forward;
+
+procedure getInt16( prompt:string; min:int16; max:int16 ); @returns( "ax" ); @forward;
+
+procedure getInt32( prompt:string; min:int32; max:int32 ); @returns( "eax" ); @forward;
+
+// procedure definitions
+procedure editCell( arrayPtr:dword, index:uns32, type:uns8 );
+begin editCell;
+  // 1: int8, 2: int16, 3:int32
+  push( eax );
+  if( type == 1 ) then
+    getInt8( "Enter a number from -128 to 127: ", -128, 127 ) 
+    mov( al, type int8 [arrayPtr + index] );
+  elseif( type == 2 )
+    getInt16( "Enter a number from -32768 to 32767: ", -32768, 32767 );
+    mov( ax, type int16 [arrayPtr + mul(2, index)] );
+  elseif( type == 3 )
+    getInt32( "Enter a number from -2147483648 to 2147483647: ", -2147483648, 2147483647 );
+    mov( eax, type int32 [arrayPtr + mul(4, index)] );
+  endif;
+  pop( eax );
+end editCell;
+
+procedure displayCells( arrayPtr:dword, amount:uns32, type:uns8 );
+begin displayCells;
+  // 1: int8, 2: int16, 3:int32
+  push( eax );
+  push( ebx );
+  push( ecx );
+  if( type == 1 ) then
+    for( mov( 0, ecx ); ecx < amount - 1; inc( ecx ) ) do
+      stdout.put( (type uns32 ecx), ": ", (type int8 [arrayPtr + ecx]), nl );
+    endfor;
+    stdout.put( amount, ": ", (type int8 [arrayPtr + ebx], nl, nl ); 
+  elseif( type == 2 )
+    for( mov( 0, ecx ); ecx < amount - 1; inc( ecx ) ) do
+      mov( ecx, ebx );
+      mul( 2, ebx );
+      stdout.put( (type uns32 ecx), ": ", (type int8 [arrayPtr + (ebx * 2)]), nl );
+    endfor;
+    stdout.put( amount, ": ", (type int8 [arrayPtr + (ebx * 2)], nl, nl ); 
+  elseif( type == 3 )
+    for( mov( 0, ecx ); ecx < amount - 1; inc( ecx ) ) do
+      mov( ecx, ebx );
+      mul( 4, ebx );
+      stdout.put( (type uns32 ecx), ": ", (type int8 [arrayPtr + (ebx * 4)]), nl );
+    endfor;
+    stdout.put( amount, ": ", (type int8 [arrayPtr + (ebx * 4)], nl, nl );
+  endif;
+  pop( ecx );
+  pop( ebx );
+  pop( eax );
+end displayCells;
+
+procedure computeLargest( arrayPtr:dword, size:uns32, type:uns8 );
+var
+  multiplier: uns8;
+begin computeLargest;
+  push( ebx );
+  push( ecx );
+  push( edx );
+  mov( [arrayPtr], ebx );
+  if( type == 1 ) then
+    mov( 1, multiplier ); 
+  elseif( type == 2 )
+    mov( 2, multiplier );
+  elseif( type == 3 )
+    mov( 3, multiplier );
+  endif;
+  for( mov( 0, ecx ); ecx < size; inc( ecx ); ) do 
+    mov( ecx, ebx );
+    mul( multiplier, ebx );
+    if( ebx < [arrayPtr + ebx] ) then
+      mov( [arrayPtr + ecx], edx );
+    endif;
+  endfor;
+  mov( size, ebx );
+  mul( multiplier, ebx );
+  mov( edx, [arrayPtr + ebx] ); 
+  pop( edx );
+  pop( ecx );
+  pop( ebx );
+end computeLargest;
+
+procedure getUns8( prompt:string; min:uns8; max:uns8 );
+begin getUns8;
+  push( ebx );
+  push( ecx );
+  // push( edx );
+  push( esi );
+  push( edi );
+  forever
+    stdout.put( prompt );
+    try
+      stdin.getu8();
+      unprotected
+        if( al >= min && al <= max ) then
+          break;
+        else
+          stdout.put( "Value must be at least ", min, " and at most ", max, ".", nl );
+        endif;
+    anyexception
+      stdout.put( "Invalid input", nl );
+    endtry;
+  endfor;
+  pop( edi );
+  pop( esi );
+  // pop( edx );
+  pop( ecx );
+  pop( ebx );
+end getUns8;
+
+procedure getUns32( prompt:string; min:uns32; max:uns32 );
+begin getUns32;
+  push( ebx );
+  push( ecx );
+  // push( edx );
+  push( esi );
+  push( edi );
+  forever
+    stdout.put( prompt );
+    try
+      stdin.getu32();
+      unprotected
+        if( eax >= min && eax <= max ) then
+          break;
+        else
+          stdout.put( "Value must be at least ", min, " and at most ", max, ".", nl );
+        endif;
+    anyexception
+      stdout.put( "Invalid input", nl );
+    endtry;
+  endfor;
+  pop( edi );
+  pop( esi );
+  // pop( edx );
+  pop( ecx );
+  pop( ebx );
+end getUns32;
+
+procedure getInt8( prompt:string; min:Int8; max:Int8 ); @returns( "al" ); @forward;
+begin getInt8;
+  push( ebx );
+  push( ecx );
+  // push( edx );
+  push( esi );
+  push( edi );
+  forever
+    stdout.put( prompt );
+    try
+      stdin.geti8();
+      unprotected
+        if( al >= min && al <= max ) then
+          break;
+        else
+          stdout.put( "Value must be at least ", min, " and at most ", max, ".", nl );
+        endif;
+    anyexception
+      stdout.put( "Invalid input", nl );
+    endtry;
+  endfor;
+  pop( edi );
+  pop( esi );
+  // pop( edx );
+  pop( ecx );
+  pop( ebx );
+end getInt8;
+
+procedure getInt16( prompt:string; min:int16; max:int16 ); @returns( "ax" ); @forward;
+begin getInt16;
+  push( ebx );
+  push( ecx );
+  // push( edx );
+  push( esi );
+  push( edi );
+  forever
+    stdout.put( prompt );
+    try
+      stdin.geti16();
+      unprotected
+        if( ax >= min && ax <= max ) then
+          break;
+        else
+          stdout.put( "Value must be at least ", min, " and at most ", max, ".", nl );
+        endif;
+    anyexception
+      stdout.put( "Invalid input", nl );
+    endtry;
+  endfor;
+  pop( edi );
+  pop( esi );
+  // pop( edx );
+  pop( ecx );
+  pop( ebx );
+end getInt16;
+
+procedure getInt32( prompt:string; min:int32; max:int32 ); @returns( "eax" ); @forward;
+begin getInt32;
+  push( ebx );
+  push( ecx );
+  // push( edx );
+  push( esi );
+  push( edi );
+  forever
+    stdout.put( prompt );
+    try
+      stdin.geti32();
+      unprotected
+        if( eax >= min && eax <= max ) then
+          break;
+        else
+          stdout.put( "Value must be at least ", min, " and at most ", max, ".", nl );
+        endif;
+    anyexception
+      stdout.put( "Invalid input", nl );
+    endtry;
+  endfor;
+  pop( edi );
+  pop( esi );
+  // pop( edx );
+  pop( ecx );
+  pop( ebx );
+end getInt32;
+
+begin challenge10;
+
+  forever
+    getUns32( "Enter a number of cells: ", 0, 4294967294 ); 
+    mov( eax, cellAmount );
+    inc( cellAmount );
+    getUns8( "Enter a data type (1=int8, 2=int16, 3=int32): ", 1, 3);
+    mov( al, dataType );
+    if( dataType == 1 ) then
+      mem.zalloc( cellAmount );
+    elseif( dataType == 2 )
+      mem.zalloc( cellAmount * 2 );
+    elseif( dataType == 3 )
+      mem.zalloc( cellAmount * 4 );
+    endif;
+    mov( eax, pointerToArray );    
+    forever
+      displayCells( pointerToArray, cellAmount, dataType );
+      stdout.put( nl, "Choose an option: ", nl, "[1]Edit Cell", nl, "[2]Exit", nl, "(1 or 2): " );
+      getUns8( "", 1, 2 );
+      if( al == 1 ) then
+        getUns32( "Enter a cell number: ", 0, cellAmount - 1 );
+        editCell( pointerToArray, eax, dataType );   
+        computeLargest( pointerToArray, cellAmount, dataType );
+      elseif( al == 2 )
+        break;
+      endif;
+      free( pointerToArray );
+      getUns8( "Would you like to make a new spreadsheet? (0=no, 1=yes): ", 0, 1 );
+      breakif( al == 0 );
+  endfor;
+
+end challenge10;
