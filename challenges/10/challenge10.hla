@@ -54,14 +54,12 @@ begin editCell;
     getInt16( "Enter a number from -32768 to 32767: ", -32768, 32767 );
     mov( ax, dx );
     mov( index, eax );
-    mul( 2, eax );
-    mov( dx, (type int16 [edi + eax]) );
+    mov( dx, (type int16 [edi + eax * 2]) );
   elseif( dType == 3 ) then
     getInt32( "Enter a number from -2147483648 to 2147483647: ", -2147483648, 2147483647 );
     mov( eax, edx );
     mov( index, eax );
-    mul( 4, eax );
-    mov( edx, (type int32 [edi + eax]) );
+    mov( edx, (type int32 [edi + eax * 4]) );
   endif;
   pop( edi );
   pop( edx );
@@ -73,69 +71,75 @@ end editCell;
 procedure displayCells( arrayPtr:dword; amount:uns32; dType:uns8 );
 begin displayCells;
   push( eax );
-  //push( ebx );
   push( ecx );
   push( edi );
   // 1: int8, 2: int16, 3:int32
   mov( amount, edi );
   mov( arrayPtr, eax );
-  dec( edi );
+  dec( amount );
   if( dType == 1 ) then
-    for( mov( 0, ecx ); ecx < edi; inc( ecx ) ) do
+    for( mov( 0, ecx ); ecx < amount; inc( ecx ) ) do
       stdout.put( (type uns32 ecx), ": ", (type int8 [eax + ecx]), nl );
     endfor;
-    stdout.put( "Largest Amount: ", (type int8 [eax + ecx]), nl, nl ); 
+    stdout.put( "Largest Amount: ", (type int8 [eax + edi]), nl, nl ); 
   elseif( dType == 2 ) then
-    for( mov( 0, ecx ); ecx < edi; inc( ecx ) ) do
-      stdout.put( (type uns32 ecx), ": ", (type int8 [eax + ecx * 2]), nl );
+    for( mov( 0, ecx ); ecx < amount; inc( ecx ) ) do
+      stdout.put( (type uns32 ecx), ": ", (type int16 [eax + ecx * 2]), nl );
     endfor;
-    stdout.put( "Largest Amount: ", (type int16 [eax + ecx * 2]), nl, nl ); 
+    stdout.put( "Largest Amount: ", (type int16 [eax + edi * 2]), nl, nl ); 
   elseif( dType == 3 ) then
-    for( mov( 0, ecx ); ecx < edi; inc( ecx ) ) do
-      stdout.put( (type uns32 ecx), ": ", (type int8 [eax + ecx * 4]), nl );
+    for( mov( 0, ecx ); ecx < amount; inc( ecx ) ) do
+      stdout.put( (type uns32 ecx), ": ", (type int32 [eax + ecx * 4]), nl );
     endfor;
-    stdout.put( "Largest Amount: ", (type int32 [eax + ecx * 4]), nl, nl );
+    stdout.put( "Largest Amount: ", (type int32 [eax + edi * 4]), nl, nl );
   endif;
   pop( edi );
   pop( ecx );
-  //pop( ebx );
   pop( eax );
 end displayCells;
 
 procedure computeLargest( arrayPtr:dword; size:uns32; dType:uns8 );
-var
-  multiplier: uns8;
 begin computeLargest;
   push( eax );
   push( ebx );
   push( ecx );
   push( edx );
   push( edi );
+  // make array available
   mov( arrayPtr, eax );
-  mov( [eax], edx );
-  dec( size );
+  // make size including largest cell available
   mov( size, edi );
-  for( mov( 0, ecx ); ecx < edi; inc( ecx ) ) do 
+  // store current largest in ebx
+  mov( 0, ebx );
+  if( dType == 1 ) then
+    mov( [eax + edi], ebx );
+  elseif( dType == 2 ) then
+    mov( [eax + edi * 2], ebx );
+  elseif( dType == 3 ) then
+    mov( [eax + edi * 4], ebx );
+  endif;
+  dec( size );
+  for( mov( 0, ecx ); ecx < size; inc( ecx ) ) do 
     if( dType == 1 ) then
-      if( ebx < [eax + ecx] ) then
-        mov( [eax + ecx], edx );
-        inc( edi );
-        mov( edx, [eax + edi] );
-        dec ( edi );
+      if( bl < [eax + ecx] ) then
+        mov( [eax + ecx], bl );
+        mov( bl, (type int8 [eax + edi]) );
       endif;
     elseif( dType == 2 ) then
-      if( ebx < [eax + ecx * 2] ) then
-        mov( [eax + ecx * 2], edx );
-        inc( edi );
-        mov( edx, [eax + edi * 2] );
-        dec( edi );
+      stdout.put( nl, "Current largest: ", (type int16 bx) );
+      stdout.put( nl, "Is ", (type int16 bx), " < ", (type int16 [eax + ecx * 2]) );
+      if( bx < [eax + ecx * 2] ) then
+        stdout.put( nl, "Yes!" );
+        mov( [eax + ecx * 2], bx );
+        mov( bx, (type int16 [eax + edi * 2]) );
+        stdout.put( nl, "New largest: ", (type int16 [eax + edi * 2]) );
+      else
+        stdout.put( nl, "No..." );
       endif;
     elseif( dType == 3 ) then
       if( ebx < [eax + ecx * 4] ) then
-        mov( [eax + ecx * 4], edx );
-        inc( edi );
-        mov( edx, [eax + edi * 4] );
-        dec( edi );
+        mov( [eax + ecx * 4], ebx );
+        mov( ebx, (type int32 [eax + edi * 4]) );
       endif;
     endif;
   endfor;
@@ -289,9 +293,11 @@ end getInt32;
 begin challenge10;
 
   forever
+    console.cls();
     getUns32( "Enter a number of cells: ", 0, 4294967294 ); 
     mov( eax, cellAmount );
     inc( cellAmount );
+    stdout.newln();
     getUns8( "Enter a data type (1=int8, 2=int16, 3=int32): ", 1, 3);
     mov( al, dataType );
     mov( cellAmount, eax );
@@ -306,24 +312,36 @@ begin challenge10;
     endif;
     mov( eax, pointerToArray );    
     forever
+      console.cls();
+      if( dataType == 1 ) then
+        stdout.put( "Type: int8" );
+      elseif( dataType == 2 ) then
+        stdout.put( "Type: int16" );
+      elseif( dataType == 3 ) then
+        stdout.put( "Type: int32" );
+      endif;
+      stdout.newln();
       stdout.newln();
       displayCells( pointerToArray, cellAmount, dataType );
-      stdout.put( nl, "Choose an option: ", nl, "[1]Edit Cell", nl, "[2]Exit", nl, "(1 or 2): " );
+      stdout.put( "Choose an option: ", nl, "[1]Edit Cell", nl, "[2]Exit", nl, "(1 or 2): " );
       getUns8( "", 1, 2 );
       if( al == 1 ) then
         dec( cellAmount );
+        dec( cellAmount );
         getUns32( "Enter a cell number: ", 0, cellAmount );
         inc( cellAmount );
+        inc( cellAmount );
         editCell( pointerToArray, eax, dataType );   
-        //computeLargest( pointerToArray, cellAmount, dataType );
+        computeLargest( pointerToArray, cellAmount, dataType );
       elseif( al == 2 ) then
         break;
       endif;
     endfor;
+    console.cls();
     free( pointerToArray );
     stdout.put( nl, "Memory has been freed.", nl );
     getUns8( "Would you like to make a new spreadsheet? (0=no, 1=yes): ", 0, 1 );
     breakif( al == 0 );
   endfor;
-
+  console.cls();
 end challenge10;
