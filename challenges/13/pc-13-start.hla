@@ -1,0 +1,154 @@
+/*
+ * COMPLETE THE PROGRAM DOCUMENTATION HERE
+ *
+ */
+program ProgrammingChallengeThirteen;
+
+#include ("stdlib.hhf")
+
+/* forward declarations */
+procedure getInt8 (prompt: string; min: int8; max: int8); @returns("al"); @forward;
+
+/* procedure definitions */
+procedure getInt8 (prompt: string; min: int8; max: int8);
+begin getInt8;
+
+	push(edx);
+	push(ecx);
+	push(ebx);
+	forever
+		try
+			stdout.put(nl, prompt, " (", min, " to ", max, "): ");
+			stdin.flushInput();
+			stdin.geti8();
+			unprotected
+				cmp((type int8 al), min);
+				jl INT8_BAD;
+				cmp((type int8 al), max);
+				jg INT8_BAD;
+				break;
+				INT8_BAD:
+					stdout.put(nl, "Value not in required range.");
+		anyexception
+			stdout.put(nl, "Invalid input.");
+		endtry;
+	endfor;
+	pop(ebx);
+	pop(ecx);
+	pop(edx);
+
+end getInt8;
+
+/* program variables and main */
+
+static
+	input: int8;
+	isPrime: boolean;
+	
+begin ProgrammingChallengeThirteen;
+
+	forever
+		
+		console.cls();
+		
+		mov(getInt8("Please enter an int8", -127, 127), input);
+		
+		stdout.put(nl, "What do you want to do with your input value?", nl);
+		stdout.put("1. Test to see if it is negative", nl);
+		stdout.put("2. Test to see if it is even", nl);
+		stdout.put("3. Reverse its sign", nl);
+		stdout.put("4. Test to see if it is prime", nl);
+		stdout.put("your choice: ");
+		getInt8("your choice", 1, 4);
+		
+		console.cls();
+		
+    cmp( al, 1 );
+      jne AL_EQUAL_2;
+      cmp( input, 0 );
+        jnb ELSE_1;
+				stdout.put(input, " is a negative value.", nl);
+			ELSE_1:
+				stdout.put(input, " is greater than or equal to zero.", nl);
+      jmp END_IF_1;
+    AL_EQUAL_2:
+    cmp( al, 2 );
+      jne AL_EQUAL_3;
+			mov(0, ah);
+			mov(input, al);
+			idiv(2, ax);
+      cmp( ah, 0 );
+        jne ELSE_2;
+				stdout.put(input, " is an even number.", nl);
+        jmp END_IF_2;
+      ELSE_2:
+				stdout.put(input, " is an odd number.", nl);
+      END_IF_2:
+      jmp END_IF_1;
+    AL_EQUAL_3:
+    cmp( al, 3 );
+    jne AL_ELSE;
+			mov(input, al);
+			not(al);
+			add(1, al);
+			stdout.put(input, " sign reversed is ", (type int8 al), nl);
+      jmp END_IF_1;
+    AL_ELSE:
+      cmp( input, 0 );
+      jnb END_IF_3;
+				stdout.put("Reversing the sign.", nl, nl);
+				mov(input, al);
+				not(al);
+				add(1, al);
+				mov(al, input);
+      END_IF_3:
+			mov(true, isPrime);
+      cmp( input, 2 );
+        jnb ELSE_3;
+				mov(false, isPrime);
+        jmp END_IF_4;
+      ELSE_3:
+				for (mov(2, cl); cl<input; inc(cl)) do
+					mov(0, ah);
+					mov(input, al);
+					div(cl, ax);
+          cmp( ah, 0 );
+          jne END_IF_5;
+						mov(false, isPrime);
+						break;
+          END_IF_5:
+				endfor;
+      END_IF_4:
+			
+      cmp( isPrime, 1 );
+      jne ELSE_4;
+				stdout.put(input, " is a prime number.", nl);
+        jmp END_IF_6;
+      ELSE_4:
+				stdout.put(input, " is not a prime number.", nl);
+      END_IF_6:
+    END_IF_1:
+		
+		stdout.put(nl, nl, "Go again (y/n)? ");
+		stdin.flushInput();
+		
+		stdin.getc();
+    and( %0101_1111, al );
+    /* Couldn't find a specific function to do this other than
+     * anding values together. Upper case characters always have their 6th
+     * bit as 1 and 5th bit as 0 while lower case letters always have
+     * both bits as 1. Anding the bits with all 1 except for the 
+     * fifth bit will only change the fifth bit. The seventh bit is not
+     * used in characters and is always 0.
+     */
+		
+		cmp(al, 'N');
+		jne GO_AGAIN;
+			break;
+		GO_AGAIN:
+			console.cls();
+		
+	endfor;
+	
+
+end ProgrammingChallengeThirteen;
