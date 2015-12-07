@@ -16,8 +16,17 @@ program Starter;
 #include("stdlib.hhf")
 
 // static declarations
+static
+  counters: uns8[5] := [5, 10, 15, 20, 25];
+  basePointer: dword;
+  choice: uns8;
 
 // procedure forward declarations
+procedure showBinary( value: byte ); @forward;
+
+procedure printArray( baseAddress:dword; arraySize:uns32; dataType:uns8 ); @forward;
+
+// procedure definitions
 procedure showBinary( value: byte );
 begin showBinary;
   push( eax );
@@ -45,13 +54,92 @@ begin showBinary;
 
 end showBinary;
 
+procedure printArray( baseAddress:dword; arraySize:uns32; dataType:uns8 );
+begin printArray;
+push( eax );
+push( ecx );
+
+mov( baseAddress, eax );
+for( mov( 0, ecx ); ecx<arraySize; inc( ecx ) ) do
+  INT_8:
+  cmp( dataType, 1 );
+  jne INT_16;
+    stdout.put( (type int8 [eax + ecx]), nl );
+    jmp END_IF;
+  INT_16:
+  cmp( dataType, 2 );
+  jne INT_32;
+    stdout.put( (type int16 [eax + ecx * 2]), nl );
+    jmp END_IF;
+  INT_32:
+  cmp( dataType, 3 );
+  jne END_IF;
+    stdout.put( (type int32 [eax + ecx * 4]), nl );
+  END_IF:
+endfor;
+
+pop( ecx );
+pop( eax );
+end printArray;
+
 begin Starter;
 
+mem.zalloc( 10 );
+mov( eax, basePointer );
+for( mov( 1, ecx ); ecx < 10; inc(ecx) ) do
+  mov( ecx, [eax + ecx] );
+endfor;
+printArray( basePointer, 10, 1 );
+
+/*
+stdin.getu8();
+mov( al, choice );
+cmp( choice, 1 );
+jne ELSE_1;
+  stdout.put( "apples" );
+  jmp END_IF;
+ELSE_1:
+cmp( choice, 2 );
+jne ELSE_2;
+  stdout.put( "bananas" );
+  jmp END_IF;
+ELSE_2:
+cmp( choice, 3 );
+jne ELSE_E;
+  stdout.put( "oranges" );
+  jmp END_IF;
+ELSE_E:
+  stdout.put( "unknown" );
+END_IF:
+stdout.newln();
+*/
+
+/*
   mov( %1111_1111, al );
   add( %0000_0001, al );
   showBinary( al );
   if ( @c ) then
     stdout.put( "OVERFLOW" );
   endif;
+*/
+
+/*
+mem.zalloc( 10  );
+mov( eax, basePointer );
+mov( basePointer, ebx );
+mov( 0, ecx );
+mov( 99, (type int8 [ebx + ecx]) );
+mov( 9, ecx );
+mov( -99, (type int8 [ebx + ecx]) );
+for( mov( 0, ecx ); ecx < 10; inc( ecx ) ) do
+  stdout.put( (type int8 [ebx + ecx]) , nl );
+endfor;
+*/
+
+/*
+for( mov( 0, ecx ); ecx < 5; inc( ecx ) ) do
+  stdout.put( counters[ecx], nl );
+endfor;
+*/
 
 end Starter;
