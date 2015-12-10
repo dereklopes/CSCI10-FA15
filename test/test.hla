@@ -20,6 +20,7 @@ static
   counters: uns8[5] := [5, 10, 15, 20, 25];
   basePointer: dword;
   choice: uns8;
+  x: uns16;
 
 // procedure forward declarations
 procedure showBinary( value: byte ); @forward;
@@ -84,12 +85,22 @@ end printArray;
 
 begin Starter;
 
+stdout.put( nl, nl, ">inb4 sign change", nl, nl );
+
+mov( %1010_1010, al );
+stdout.put( "AL: ", (type int8 al), nl );
+not( al );
+add( 1, al );
+stdout.put( "AL: ", (type int8 al), nl );
+
+/*
 mem.zalloc( 10 );
 mov( eax, basePointer );
 for( mov( 1, ecx ); ecx < 10; inc(ecx) ) do
   mov( ecx, [eax + ecx] );
 endfor;
 printArray( basePointer, 10, 1 );
+*/
 
 /*
 stdin.getu8();

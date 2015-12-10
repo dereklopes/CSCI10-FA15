@@ -1,0 +1,420 @@
+/*
+ * Project 2
+ *
+ * written by			Derek Lopes
+ * created on			8 December 2015
+ * last modified on		9 December 2015
+ *
+ * Create a single column spread sheet with simple
+ * data calculations and different representation
+ * modes of the numbers in each cell.
+ *
+ */
+program project2;
+
+// includes
+#include( "stdlib.hhf" )
+// static declarations
+static
+  numCells: uns8; // number of cells, starting with 1
+  basePointer: dword; // pointer to the first cell in the array
+  dataType: uns8; // type of data; 1 = int8, 2 = int16, 3 = int32
+  representation: uns8 := 1; // NEED EXPLAINATION
+  calculation: uns8 := 1; // NEED EXPLAINATION
+
+// procedure forward declarations
+
+procedure changeRepresentation; @forward;
+
+procedure displayCells( basePointer_:dword; dataType_:uns8; numCells_:uns8; representation_:uns8; calculation_:uns8 ); @forward; 
+
+procedure createArray( dataType_:uns8; numCells_:uns8 ); @returns( "eax" ); @forward;
+
+procedure getUns8( prompt:string; min:uns8; max:uns8 ); @returns( "al" ); @forward;
+
+procedure getUns32( prompt:string; min:uns32; max:uns32 ); @returns( "eax" ); @forward;
+
+procedure getInt8( prompt:string; min:Int8; max:Int8 ); @returns( "al" ); @forward;
+
+procedure getInt16( prompt:string; min:int16; max:int16 ); @returns( "ax" ); @forward;
+
+procedure getInt32( prompt:string; min:int32; max:int32 ); @returns( "eax" ); @forward;
+
+// procedure definitions
+
+procedure changeRepresentation;
+begin changeRepresentation;
+  push( eax );
+  stdout.put( "Choose a presentation of your data: ", nl );
+  stdout.put( "[1] Decimal", nl, "[2] Binary", nl, "[3] Hexadecimal", nl );
+  getUns8( "Enter your choice (1-3): ", 1, 3 );
+  mov( al, representation );
+  pop( eax );
+end changeRepresentation;
+
+procedure displayCells( basePointer_:dword; dataType_:uns8; numCells_:uns8; representation_:uns8; calculation_:uns8 );
+begin displayCells;
+  // eax hold array pointer
+  // ebx holds current cell number
+  // ecx holds array iterator
+  // edx is used as an intermediary for hex output
+  push( eax );
+  push( ebx );
+  push( ecx );
+  push( edx );
+  mov( basePointer_, eax );
+  mov( 0, ecx );
+  dec( numCells_ );
+  FOR_DISPLAY:
+  mov( cl, bl );
+  inc( bl );
+  cmp( cl, numCells_ );
+  jae FOR_DISPLAY_END;
+    DISP_DATA_1:
+    cmp( dataType_, 1 );
+    jne DISP_DATA_2;
+      REP_1_DATA_1:
+      cmp( representation_, 1 );
+      jne REP_2_DATA_1;
+        stdout.put( (type uns8 bl), ": ", (type int8 [eax + ecx]), nl ); 
+        jmp END_DISP_DATA;
+      REP_2_DATA_1:
+      cmp( representation_, 2 );
+      jne REP_3_DATA_1;
+        // DISPLAY BINARY
+        jmp END_DISP_DATA;
+      REP_3_DATA_1:
+        mov( [eax + ecx], edx );
+        stdout.put( (type uns8 bl), ": $", edx, nl ); 
+        jmp END_DISP_DATA;  
+    DISP_DATA_2:
+    cmp( dataType_, 2 );
+    jne DISP_DATA_3;
+      REP_1_DATA_2:
+      cmp( representation_, 1 );
+      jne REP_2_DATA_2;
+        stdout.put( (type uns8 bl), ": ", (type int16 [eax + ecx * 2]), nl ); 
+        jmp END_DISP_DATA;
+      REP_2_DATA_2:
+      cmp( representation_, 2 );
+      jne REP_3_DATA_2;
+        // DISPLAY BINARY
+        jmp END_DISP_DATA;
+      REP_3_DATA_2:
+        mov( [eax + ecx * 2], edx );
+        stdout.put( (type uns8 bl), ": $", edx, nl ); 
+        jmp END_DISP_DATA;
+    DISP_DATA_3:
+      REP_1_DATA_3:
+      cmp( representation_, 1 );
+      jne REP_2_DATA_3;
+        stdout.put( (type uns8 bl), ": ", (type int32 [eax + ecx * 4]), nl ); 
+        jmp END_DISP_DATA;
+      REP_2_DATA_3:
+      cmp( representation_, 2 );
+      jne REP_3_DATA_3;
+        // DISPLAY BINARY
+        jmp END_DISP_DATA;
+      REP_3_DATA_3:
+        mov( [eax + ecx * 4], edx );
+        stdout.put( (type uns8 bl), ": $", edx, nl ); 
+        jmp END_DISP_DATA;
+    END_DISP_DATA:
+    inc( cl );
+  jmp FOR_DISPLAY;
+  FOR_DISPLAY_END:
+  mov( 0, ecx );
+  mov( numCells_, cl );
+  DISP_CALC_1:
+  cmp( calculation_, 1 );
+  jne DISP_CALC_2;
+    stdout.put( "Sum: ", (type int8 [eax + ecx]), nl ); 
+    jmp END_DISP_CALC;
+  DISP_CALC_2:
+  cmp( calculation_, 2 );
+  jne DISP_CALC_3;
+    stdout.put( "Average: ", (type int8 [eax + ecx]), nl ); 
+    jmp END_DISP_CALC;
+  DISP_CALC_3:
+  cmp( calculation_, 3 );
+  jne DISP_CALC_4;
+    stdout.put( "Minimum: ", (type int8 [eax + ecx]), nl ); 
+    jmp END_DISP_CALC;
+  DISP_CALC_4:
+    stdout.put( "Maximum: ", (type int8 [eax + ecx]), nl ); 
+    jmp END_DISP_CALC;
+  END_DISP_CALC:
+  stdout.newln();
+  pop( edx );
+  pop( ecx );
+  pop( ebx );
+  pop( eax );
+end displayCells;
+
+procedure createArray( dataType_:uns8; numCells_:uns8 );
+begin createArray;
+  stdout.put( nl, "Number of cells (total): ", numCells_, nl "Data type: ", dataType_, nl );
+  // ebx contains number of bytes allocated
+  push( ebx );
+  // eax contains cell amount (1 indexed) 
+  mov( 0, eax );
+  mov( numCells_, al );
+  CREATE_INT8:
+  cmp( dataType_, 1 );
+  jne CREATE_INT16;
+    mov( eax, ebx );
+    mem.zalloc( eax );
+    jmp CREATE_END;
+  CREATE_INT16:
+  cmp( dataType_, 2 );
+  jne CREATE_INT32;
+    mul( 2, eax );
+    mov( eax, ebx );
+    mem.zalloc( eax );
+    jmp CREATE_END;
+  CREATE_INT32:
+    mul( 4, eax );
+    mov( eax, ebx );
+    mem.zalloc( eax );
+  CREATE_END:
+  stdout.put( nl, (type uns32 ebx), " bytes allocated", nl );
+  pop( ebx );
+end createArray;
+
+procedure getUns8( prompt:string; min:uns8; max:uns8 );
+begin getUns8;
+  push( ebx );
+  push( ecx );
+  push( esi );
+  push( edi );
+  FOREVER_UNS8:
+    stdout.put( prompt );
+    try
+      stdin.getu8();
+      unprotected
+      IF_UNS8:
+      cmp( al, min );
+      jb ELSE_UNS8;
+      cmp( al, max );
+      ja ELSE_UNS8;
+          jmp ENDFOR_UNS8;
+      ELSE_UNS8:
+          stdout.put( "Value must be at least ", min, " and at most ", max, ".", nl );
+      END_IF_UNS8:
+    anyexception
+      stdout.put( "Invalid input", nl );
+    endtry;
+  jmp FOREVER_UNS8;
+  ENDFOR_UNS8:
+  pop( edi );
+  pop( esi );
+  pop( ecx );
+  pop( ebx );
+end getUns8;
+
+procedure getUns32( prompt:string; min:uns32; max:uns32 );
+begin getUns32;
+  push( ebx );
+  push( ecx );
+  push( esi );
+  push( edi );
+  FOREVER_UNS32:
+    stdout.put( prompt );
+    try
+      stdin.getu32();
+      unprotected
+      IF_UNS8:
+      cmp( eax, min );
+      jb ELSE_UNS32;
+      cmp( eax, max );
+      ja ELSE_UNS32;
+          jmp ENDFOR_UNS32;
+      ELSE_UNS32:
+          stdout.put( "Value must be at least ", min, " and at most ", max, ".", nl );
+      END_IF_UNS32:
+    anyexception
+      stdout.put( "Invalid input", nl );
+    endtry;
+  jmp FOREVER_UNS32;
+  ENDFOR_UNS32:
+  pop( edi );
+  pop( esi );
+  pop( ecx );
+  pop( ebx );
+end getUns32;
+
+procedure getInt8( prompt:string; min:int8; max:int8 );
+begin getInt8;
+  push( ebx );
+  push( ecx );
+  push( esi );
+  push( edi );
+  FOREVER_INT8:
+    stdout.put( prompt );
+    try
+      stdin.geti8();
+      unprotected
+      IF_INT8:
+      cmp( al, min );
+      jb ELSE_INT8;
+      cmp( al, max );
+      ja ELSE_INT8;
+          jmp ENDFOR_INT8;
+      ELSE_INT8:
+          stdout.put( "Value must be at least ", min, " and at most ", max, ".", nl );
+      END_IF_INT8:
+    anyexception
+      stdout.put( "Invalid input", nl );
+    endtry;
+  jmp FOREVER_INT8;
+  ENDFOR_INT8:
+  pop( edi );
+  pop( esi );
+  pop( ecx );
+  pop( ebx );
+end getInt8;
+
+procedure getInt16( prompt:string; min:int16; max:int16 );
+begin getInt16;
+  push( ebx );
+  push( ecx );
+  push( esi );
+  push( edi );
+  FOREVER_INT16:
+    stdout.put( prompt );
+    try
+      stdin.geti16();
+      unprotected
+      IF_INT16:
+      cmp( ax, min );
+      jb ELSE_INT16;
+      cmp( ax, max );
+      ja ELSE_INT16;
+          jmp ENDFOR_INT16;
+      ELSE_INT16:
+          stdout.put( "Value must be at least ", min, " and at most ", max, ".", nl );
+      END_IF_INT16:
+    anyexception
+      stdout.put( "Invalid input", nl );
+    endtry;
+  jmp FOREVER_INT16;
+  ENDFOR_INT16:
+  pop( edi );
+  pop( esi );
+  pop( ecx );
+  pop( ebx );
+end getInt16;
+
+procedure getInt32( prompt:string; min:int32; max:int32 );;
+begin getInt32;
+  push( ebx );
+  push( ecx );
+  push( esi );
+  push( edi );
+  FOREVER_INT32:
+    stdout.put( prompt );
+    try
+      stdin.geti32();
+      unprotected
+      IF_INT32:
+      cmp( eax, min );
+      jb ELSE_INT32;
+      cmp( eax, max );
+      ja ELSE_INT32;
+          jmp ENDFOR_INT32;
+      ELSE_INT32:
+          stdout.put( "Value must be at least ", min, " and at most ", max, ".", nl );
+      END_IF_INT32:
+    anyexception
+      stdout.put( "Invalid input", nl );
+    endtry;
+  jmp FOREVER_INT32;
+  ENDFOR_INT32:
+  pop( edi );
+  pop( esi );
+  pop( ecx );
+  pop( ebx );
+end getInt32;
+
+begin project2;
+
+  START:
+  console.cls();
+  getUns8( "Enter number of cells desired (2-10): ", 2, 10 ); 
+  mov( al, numCells );
+  inc( numCells );
+  stdout.newln();
+  stdout.put( "Choose a data type:", nl, "[1]int8", nl "[2]int16", nl, "[3]int32", nl );
+  getUns8( "Enter your choice (1-3): ", 1, 3 );
+  mov( al, dataType );
+
+  console.cls();
+  createArray( dataType, numCells );
+  mov( eax, basePointer );
+
+  stdout.put( nl, "Press ENTER to continue..." );
+  stdin.flushInput();
+  push( eax );
+  stdin.readLn();
+  pop( eax );
+  console.cls();
+
+  FOREVER_MAIN:
+
+  displayCells( basePointer, dataType, numCells, representation, calculation ); 
+
+  stdout.put( "[1] Edit a cell", nl, "[2] Change calculation", nl, "[3] Change presentation", nl, "[4] Reset and start over", nl, "[0] Exit program", nl, nl );
+  getUns8( "Your choice (0-4): ", 0, 4 );
+  MAIN_AL_0:
+  cmp( al, 0 );
+  jne MAIN_AL_1;
+    jmp END_FOREVER_MAIN;
+  MAIN_AL_1:
+  cmp( al, 1 );
+  jne MAIN_AL_2;
+    // EDIT CELL
+    console.cls();
+    jmp MAIN_END_IF;
+  MAIN_AL_2:
+  cmp( al, 2 );
+  jne MAIN_AL_3;
+    // CHANGE CALCULATION
+    console.cls();
+    jmp MAIN_END_IF;
+  MAIN_AL_3:
+  cmp( al, 3 );
+  jne MAIN_AL_4;
+    changeRepresentation();
+    stdout.newln();
+    stdout.put( nl, "Press ENTER to continue..." );
+    stdin.flushInput();
+    push( eax );
+    stdin.readLn();
+    pop( eax );
+    console.cls();
+    jmp MAIN_END_IF;
+  MAIN_AL_4:
+    mem.free( basePointer );
+    stdout.put( nl, "Memory has been cleared", nl );
+    stdout.put( nl, "Press ENTER to continue..." );
+    stdin.flushInput();
+    push( eax );
+    stdin.readLn();
+    pop( eax );
+    console.cls();
+    jmp START;
+  MAIN_END_IF:
+  jmp FOREVER_MAIN;
+  END_FOREVER_MAIN:
+  console.cls();
+  mem.free( basePointer );
+  stdout.put( "Memory has been cleared", nl );
+  stdout.put( nl, "Press ENTER to exit..." );
+  stdin.flushInput();
+  push( eax );
+  stdin.readLn();
+  pop( eax );
+  console.cls();
+
+
+end project2;
