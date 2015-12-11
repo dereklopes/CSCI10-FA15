@@ -19,12 +19,21 @@ static
   numCells: uns8; // number of cells, starting with 1
   basePointer: dword; // pointer to the first cell in the array
   dataType: uns8; // type of data; 1 = int8, 2 = int16, 3 = int32
-  representation: uns8 := 1; // NEED EXPLAINATION
+  representation: uns8 := 1; // representation of numbers; 1=dec, 2=bin, 3=hex
   calculation: uns8 := 1; // NEED EXPLAINATION
 
 // procedure forward declarations
 
+
+procedure showBinary8( value: byte ); @forward;
+
+procedure showBinary16( value: word ); @forward;
+
+procedure showBinary32( value: dword ); @forward;
+
 procedure changeRepresentation; @forward;
+
+procedure displayCell( label_:string; pointer_:dword; dataType_:uns8; representation_:uns8 ); @forward;
 
 procedure displayCells( basePointer_:dword; dataType_:uns8; numCells_:uns8; representation_:uns8; calculation_:uns8 ); @forward; 
 
@@ -41,6 +50,71 @@ procedure getInt16( prompt:string; min:int16; max:int16 ); @returns( "ax" ); @fo
 procedure getInt32( prompt:string; min:int32; max:int32 ); @returns( "eax" ); @forward;
 
 // procedure definitions
+procedure showBinary8( value: byte );
+begin showBinary8;
+  push( eax );
+  push( ecx );
+  mov( value, al );
+  stdout.put( "%" )
+  for( mov( 0, cl ); cl < 8; inc( cl ) ) do
+    shl( 1, al );
+    if ( @c ) then
+      stdout.put( "1" );
+    else
+      stdout.put( "0" );
+    endif;
+    if ( cl == 3 ) then
+      stdout.put( "_" );
+    endif;
+  endfor;
+  stdout.newln();
+  pop( ecx );
+  pop( eax );
+end showBinary8;
+
+procedure showBinary16( value: word );
+begin showBinary16;
+  push( eax );
+  push( ecx );
+  mov( value, ax );
+  stdout.put( "%" )
+  for( mov( 0, cl ); cl < 16; inc( cl ) ) do
+    shl( 1, ax );
+    if ( @c ) then
+      stdout.put( "1" );
+    else
+      stdout.put( "0" );
+    endif;
+    if ( cl == 3 ) then
+      stdout.put( "_" );
+    endif;
+  endfor;
+  stdout.newln();
+  pop( ecx );
+  pop( eax );
+end showBinary16;
+
+procedure showBinary32( value: dword );
+begin showBinary32;
+  push( eax );
+  push( ecx );
+  mov( value, eax );
+  stdout.put( "%" )
+  for( mov( 0, cl ); cl < 8; inc( cl ) ) do
+    shl( 1, eax );
+    if ( @c ) then
+      stdout.put( "1" );
+    else
+      stdout.put( "0" );
+    endif;
+    if ( cl == 3 ) then
+      stdout.put( "_" );
+    endif;
+  endfor;
+  stdout.newln();
+  pop( ecx );
+  pop( eax );
+end showBinary32;
 
 procedure changeRepresentation;
 begin changeRepresentation;
@@ -51,6 +125,67 @@ begin changeRepresentation;
   mov( al, representation );
   pop( eax );
 end changeRepresentation;
+
+procedure displayCell( label_:string; pointer_:dword; dataType_:uns8; representation_:uns8 );
+begin displayCell;
+  // eax holds pointer_
+  push( eax );
+  mov( pointer_, eax );
+  DISPCELL_DATA_1:
+  cmp( dataType_, 1 );
+  jne DISPCELL_DATA_2;
+    REPCELL_1_DATA_1:
+    cmp( representation_, 1 );
+    jne REPCELL_2_DATA_1;
+      stdout.put( label_, ": ", (type int8 [eax]), nl ); 
+      jmp END_DISPCELL_DATA;
+    REPCELL_2_DATA_1:
+    cmp( representation_, 2 );
+    jne REPCELL_3_DATA_1;
+      stdout.put( label_, ": " );
+      showBinary8( (type int8 [eax]) );
+      jmp END_DISPCELL_DATA;
+    REPCELL_3_DATA_1:
+      mov( [eax], edx );
+      stdout.put( label_, ": $", dl, nl ); 
+      jmp END_DISPCELL_DATA;  
+  DISPCELL_DATA_2:
+  cmp( dataType_, 2 );
+  jne DISPCELL_DATA_3;
+    REPCELL_1_DATA_2:
+    cmp( representation_, 1 );
+    jne REPCELL_2_DATA_2;
+      stdout.put( label_, ": ", (type int16 [eax]), nl ); 
+      jmp END_DISPCELL_DATA;
+    REPCELL_2_DATA_2:
+    cmp( representation_, 2 );
+    jne REPCELL_3_DATA_2;
+      stdout.put( label_, ": " );
+      showBinary16( (type int16 [eax]) );
+      jmp END_DISPCELL_DATA;
+    REPCELL_3_DATA_2:
+      mov( [eax], edx );
+      stdout.put( label_, ": $", dx, nl ); 
+      jmp END_DISPCELL_DATA;
+  DISPCELL_DATA_3:
+    REPCELL_1_DATA_3:
+    cmp( representation_, 1 );
+    jne REPCELL_2_DATA_3;
+      stdout.put( label_, ": ", (type int32 [eax]), nl ); 
+      jmp END_DISPCELL_DATA;
+    REPCELL_2_DATA_3:
+    cmp( representation_, 2 );
+    jne REPCELL_3_DATA_3;
+      stdout.put( label_, ": " );
+      showBinary32( (type int32 [eax]) );
+      jmp END_DISPCELL_DATA;
+    REPCELL_3_DATA_3:
+      mov( [eax], edx );
+      stdout.put( label_, ": $", edx, nl ); 
+      jmp END_DISPCELL_DATA;
+  END_DISPCELL_DATA:
+  pop( eax );
+end displayCell;
 
 procedure displayCells( basePointer_:dword; dataType_:uns8; numCells_:uns8; representation_:uns8; calculation_:uns8 );
 begin displayCells;
@@ -81,11 +216,12 @@ begin displayCells;
       REP_2_DATA_1:
       cmp( representation_, 2 );
       jne REP_3_DATA_1;
-        // DISPLAY BINARY
+        stdout.put( (type uns8 bl), ": " );
+        showBinary8( (type int8 [eax + ecx]) );
         jmp END_DISP_DATA;
       REP_3_DATA_1:
         mov( [eax + ecx], edx );
-        stdout.put( (type uns8 bl), ": $", edx, nl ); 
+        stdout.put( (type uns8 bl), ": $", dl, nl ); 
         jmp END_DISP_DATA;  
     DISP_DATA_2:
     cmp( dataType_, 2 );
@@ -98,11 +234,12 @@ begin displayCells;
       REP_2_DATA_2:
       cmp( representation_, 2 );
       jne REP_3_DATA_2;
-        // DISPLAY BINARY
+        stdout.put( (type uns8 bl), ": " );
+        showBinary16( (type int16 [eax + ecx * 2]) );
         jmp END_DISP_DATA;
       REP_3_DATA_2:
         mov( [eax + ecx * 2], edx );
-        stdout.put( (type uns8 bl), ": $", edx, nl ); 
+        stdout.put( (type uns8 bl), ": $", dx, nl ); 
         jmp END_DISP_DATA;
     DISP_DATA_3:
       REP_1_DATA_3:
@@ -113,7 +250,8 @@ begin displayCells;
       REP_2_DATA_3:
       cmp( representation_, 2 );
       jne REP_3_DATA_3;
-        // DISPLAY BINARY
+        stdout.put( (type uns8 bl), ": " );
+        showBinary32( (type int32 [eax + ecx * 4]) );
         jmp END_DISP_DATA;
       REP_3_DATA_3:
         mov( [eax + ecx * 4], edx );
@@ -125,23 +263,48 @@ begin displayCells;
   FOR_DISPLAY_END:
   mov( 0, ecx );
   mov( numCells_, cl );
+
+  CALC_CELL_DATA_1:
+  cmp( dataType_, 1 );
+  jne CALC_CELL_DATA_2;
+    add( eax, ecx );
+    jmp CALC_CELL_DATA_END;
+  CALC_CELL_DATA_2:
+  cmp( dataType_, 2 );
+  jne CALC_CELL_DATA_3;
+    push( eax );
+    mov( ecx, eax );
+    mul( 2, eax );
+    mov( eax, ecx );
+    pop( eax );
+    add( eax, ecx );
+    jmp CALC_CELL_DATA_END;
+  CALC_CELL_DATA_3:
+    push( eax );
+    mov( ecx, eax );
+    mul( 4, eax );
+    mov( eax, ecx );
+    pop( eax );
+    add( eax, ecx );
+  CALC_CELL_DATA_END: 
+
   DISP_CALC_1:
   cmp( calculation_, 1 );
   jne DISP_CALC_2;
-    stdout.put( "Sum: ", (type int8 [eax + ecx]), nl ); 
+    displayCell( "Sum: ", eax, dataType_, representation_ ); 
     jmp END_DISP_CALC;
   DISP_CALC_2:
   cmp( calculation_, 2 );
   jne DISP_CALC_3;
-    stdout.put( "Average: ", (type int8 [eax + ecx]), nl ); 
+    displayCell( "Average: ", eax, dataType_, representation_ ); 
     jmp END_DISP_CALC;
   DISP_CALC_3:
   cmp( calculation_, 3 );
   jne DISP_CALC_4;
-    stdout.put( "Minimum: ", (type int8 [eax + ecx]), nl ); 
+    displayCell( "Minimum: ", eax, dataType_, representation_ ); 
     jmp END_DISP_CALC;
   DISP_CALC_4:
-    stdout.put( "Maximum: ", (type int8 [eax + ecx]), nl ); 
+    displayCell( "Maximum: ", eax, dataType_, representation_ ); 
     jmp END_DISP_CALC;
   END_DISP_CALC:
   stdout.newln();
@@ -351,6 +514,24 @@ begin project2;
   console.cls();
   createArray( dataType, numCells );
   mov( eax, basePointer );
+
+  // BEGIN TESTING CODE
+  push( ecx );
+  mov( 0, ecx );
+  LOAD_DATA:
+    cmp( cl, numCells );
+    jae END_LOAD_DATA;
+    if( dataType = 1 ) then
+      mov( (type int8 cl), [eax + ecx] );
+    elseif( dataType = 2 ) then
+      mov( (type int16 cx), [eax + ecx * 2] );
+    else
+      mov( (type int32 ecx), [eax + ecx * 4] );
+    endif;
+    inc( ecx );
+  jmp LOAD_DATA;
+  END_LOAD_DATA:
+  // END TESTING CODE
 
   stdout.put( nl, "Press ENTER to continue..." );
   stdin.flushInput();
