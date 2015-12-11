@@ -24,6 +24,7 @@ static
 
 // procedure forward declarations
 
+procedure editCell( basePointer_:dword; cellNumber:uns8; dataType_:uns8; representation_:uns8); @forward;
 
 procedure showBinary8( value: byte ); @forward;
 
@@ -50,6 +51,46 @@ procedure getInt16( prompt:string; min:int16; max:int16 ); @returns( "ax" ); @fo
 procedure getInt32( prompt:string; min:int32; max:int32 ); @returns( "eax" ); @forward;
 
 // procedure definitions
+
+procedure editCell( basePointer_:dword; cellNumber:uns8; dataType_:uns8; representation_:uns8 );
+begin editCell;
+  // eax holds pointer
+  push( eax );
+  // ebx holds new value
+  push( ebx );
+  // edx holds cell number
+  push( edx );
+    mov( 0, edx );
+    dec( cellNumber );
+    mov( cellNumber, dl );
+    mov( basePointer_, eax );
+    EDIT_DATA_1:
+    cmp( dataType_, 1 );
+    jne EDIT_DATA_2;
+      add( edx, eax );
+      displayCell( "Old value: ", eax, dataType_, representation_ );
+      stdout.newln();
+      push( eax );
+      mov( 0, eax );
+      getInt8( "Enter a new value: ", -128, 127);
+      // bl holds new value
+      mov( al, bl );
+      pop( eax );
+      mov( (type int8 bl), [eax] ); 
+      jmp END_EDIT_DATA;
+    EDIT_DATA_2:
+    cmp( dataType_, 2 );
+    jne EDIT_DATA_3;
+
+      jmp END_EDIT_DATA;
+    EDIT_DATA_3:
+
+
+    END_EDIT_DATA:
+  pop( ebx );
+  pop( eax );
+end editCell;
+
 procedure showBinary8( value: byte );
 begin showBinary8;
   push( eax );
@@ -418,13 +459,14 @@ begin getInt8;
       stdin.geti8();
       unprotected
       IF_INT8:
-      cmp( al, min );
+      cmp( min, al );
       jb ELSE_INT8;
-      cmp( al, max );
+        jmp ENDFOR_INT8;
+      cmp( max, al );
       ja ELSE_INT8;
-          jmp ENDFOR_INT8;
+        jmp ENDFOR_INT8;
       ELSE_INT8:
-          stdout.put( "Value must be at least ", min, " and at most ", max, ".", nl );
+        stdout.put( "Value must be at least ", min, " and at most ", max, ".", nl );
       END_IF_INT8:
     anyexception
       stdout.put( "Invalid input", nl );
@@ -553,7 +595,18 @@ begin project2;
   MAIN_AL_1:
   cmp( al, 1 );
   jne MAIN_AL_2;
-    // EDIT CELL
+    stdout.newln();
+    push( eax );
+    mov( 0, eax );
+    getUns8( "Enter a cell number to edit: ", 1, numCells ); 
+    console.cls();
+    editCell( basePointer, al, dataType, representation );
+    pop( eax );
+    stdout.put( nl, "Press ENTER to continue..." );
+    stdin.flushInput();
+    push( eax );
+    stdin.readLn();
+    pop( eax );
     console.cls();
     jmp MAIN_END_IF;
   MAIN_AL_2:
@@ -596,6 +649,5 @@ begin project2;
   stdin.readLn();
   pop( eax );
   console.cls();
-
 
 end project2;
