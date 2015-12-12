@@ -1,3 +1,4 @@
 hla project2.hla
-read -p "Press [Enter] to run program or exit with [Ctrl + c]..."
+read -e -p "Press [Enter] to run program or exit with [Ctrl + c]...
+"
 ./project2
